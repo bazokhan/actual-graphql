@@ -1,0 +1,25 @@
+{
+  "name": "actual-graphql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.9.15",
+    "bcryptjs": "^2.4.3",
+    "graphql": "^14.5.8",
+    "jsonwebtoken": "^8.5.1",
+    "sequelize": "^5.21.3",
+    "sequelize-cli": "^5.5.1",
+    "sqlite3": "^4.1.1",
+    "uuid": "^3.3.3"
+  },
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "migrate": "sequelize db:migrate",
+    "delete": "sequelize db:migrate:undo:all",
+    "generate-migration": "sequelize migration:generate"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
