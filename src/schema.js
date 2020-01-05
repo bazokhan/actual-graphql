@@ -123,9 +123,9 @@ const typeDefs = gql`
     createUser(user: CreateUserInput!): User!
     createAccount(account: CreateAccountInput!): Account!
     createPayee(payee: CreatePayeeInput!): Payee!
-    createCatGroup(account: CreateCatGroupInput!): CategoryGroup!
-    createCategory(account: CreateCategoryInput!): Category!
-    createTransaction(account: CreateTransactionInput!): Transaction!
+    createCatGroup(group: CreateCatGroupInput!): CategoryGroup!
+    createCategory(category: CreateCategoryInput!): Category!
+    createTransaction(transaction: CreateTransactionInput!): Transaction!
   }
 `;
 

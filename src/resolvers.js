@@ -3,6 +3,25 @@ const uuidv1 = require("uuid/v1");
 const { Token } = require("./scalars");
 const jwt = require("jsonwebtoken");
 
+const numerizeDate = dateIsoString => {
+  try {
+    const [day, month, year] = dateIsoString.split("-");
+    if (
+      !day ||
+      !month ||
+      !year ||
+      !day.length === 2 ||
+      !month.length === 2 ||
+      !year.length === 4
+    ) {
+      throw new Error("Invalid date isoString");
+    }
+    return Number([year, month, day].join(""));
+  } catch {
+    return 0;
+  }
+};
+
 const resolvers = {
   Token,
   Query: {
@@ -48,10 +67,63 @@ const resolvers = {
         id: uuidv1(),
         name,
         email,
+        tombstone: 0,
         password: await bcrypt.hash(password, 10)
       }),
     createAccount: async (root, { account: { userId, name } }, { models }) =>
-      models.Account.create({ userId, name })
+      models.Account.create({ id: uuidv1(), userId, name, tombstone: 0 }),
+    createPayee: async (root, { payee: { accountId, name } }, { models }) =>
+      accountId
+        ? models.Payee.create({
+            id: uuidv1(),
+            transferAccount: accountId,
+            name,
+            tombstone: 0
+          })
+        : models.Payee.create({ id: uuidv1(), name, tombstone: 0 }),
+    createCatGroup: async (root, { group: { isIncome, name } }, { models }) =>
+      isIncome
+        ? models.CategoryGroup.create({
+            id: uuidv1(),
+            isIncome: 1,
+            name,
+            tombstone: 0
+          })
+        : models.CategoryGroup.create({
+            id: uuidv1(),
+            isIncome: 0,
+            name,
+            tombstone: 0
+          }),
+    createCategory: async (
+      root,
+      { category: { groupId, name } },
+      { models }
+    ) => {
+      const categoryGroup = await models.CategoryGroup.findByPk(groupId);
+      return models.Category.create({
+        id: uuidv1(),
+        isIncome: categoryGroup.isIncome || 0,
+        name,
+        catGroup: groupId,
+        tombstone: 0
+      });
+    },
+    createTransaction: async (
+      root,
+      { transaction: { amount, notes, date, accountId, categoryId, payeeId } },
+      { models }
+    ) =>
+      models.Transaction.create({
+        id: uuidv1(),
+        amount,
+        notes,
+        date: numerizeDate(date),
+        acct: accountId,
+        category: categoryId,
+        payeeId,
+        tombstone: 0
+      })
   },
   User: {
     accounts: async user => user.getAccounts()
