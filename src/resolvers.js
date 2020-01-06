@@ -334,27 +334,33 @@ const resolvers = {
     }
   },
   User: {
-    accounts: async user => user.getAccounts()
+    accounts: async user => user.getAccounts(),
+    deleted: async user => Boolean(user.tombstone)
   },
   Account: {
     user: async account => account.getUser(),
-    transactions: async account => account.getTransactions()
+    transactions: async account => account.getTransactions(),
+    deleted: async account => Boolean(account.tombstone)
   },
   Payee: {
     account: async payee => payee.getAccount(),
-    transactions: async payee => payee.getTransactions()
+    transactions: async payee => payee.getTransactions(),
+    deleted: async payee => Boolean(payee.tombstone)
   },
   CategoryGroup: {
-    categories: async catGroup => catGroup.getCategories()
+    categories: async catGroup => catGroup.getCategories(),
+    deleted: async catGroup => Boolean(catGroup.tombstone)
   },
   Category: {
     group: async category => category.getCategoryGroup(),
-    transactions: async category => category.getTransactions()
+    transactions: async category => category.getTransactions(),
+    deleted: async category => Boolean(category.tombstone)
   },
   Transaction: {
     account: async transaction => transaction.getAccount(),
     category: async transaction => transaction.getCategory(),
-    payee: async transaction => transaction.getPayee()
+    payee: async transaction => transaction.getPayee(),
+    deleted: async transaction => Boolean(transaction.tombstone)
   }
 };
 
