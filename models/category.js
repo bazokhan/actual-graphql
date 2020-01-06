@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Category.associate = models => {
-    Category.hasMany(models.Transaction);
+    Category.hasMany(models.Transaction, { foreignKey: "category" });
     Category.belongsTo(models.CategoryGroup, { foreignKey: "catGroup" });
   };
   return Category;

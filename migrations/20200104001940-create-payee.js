@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       transferAccount: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.STRING
       },
       tombstone: {

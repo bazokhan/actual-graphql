@@ -48,6 +48,7 @@ const typeDefs = gql`
   input CreatePayeeInput {
     name: String!
     accountId: ID
+    accountName: String
   }
 
   type CategoryGroup {
@@ -78,7 +79,8 @@ const typeDefs = gql`
 
   input CreateCategoryInput {
     name: String!
-    groupId: ID!
+    groupId: ID
+    groupName: String
   }
 
   type Transaction {
@@ -98,9 +100,13 @@ const typeDefs = gql`
     amount: Float!
     notes: String
     date: String!
-    accountId: ID!
-    categoryId: ID!
-    payeeId: ID!
+    accountId: ID
+    categoryId: ID
+    payeeId: ID
+    accountName: String
+    categoryName: String
+    categoryGroupName: String
+    payeeName: String
   }
 
   input LoginInput {
@@ -126,6 +132,11 @@ const typeDefs = gql`
     createCatGroup(group: CreateCatGroupInput!): CategoryGroup!
     createCategory(category: CreateCategoryInput!): Category!
     createTransaction(transaction: CreateTransactionInput!): Transaction!
+    createAccounts(accounts: [CreateAccountInput!]!): [Account!]
+    createPayees(payees: [CreatePayeeInput!]!): [Payee!]
+    createCatGroups(groups: [CreateCatGroupInput!]!): [CategoryGroup!]
+    createCategories(categories: [CreateCategoryInput!]!): [Category!]
+    createTransactions(transactions: [CreateTransactionInput!]!): [Transaction]!
   }
 `;
 

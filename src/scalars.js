@@ -2,7 +2,6 @@ const { Kind } = require("graphql/language");
 const { GraphQLScalarType } = require("graphql");
 
 const serialize = value => {
-  console.log(value);
   return typeof value === "string" ? value : null;
 };
 
