@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     "Transaction",
     {
       amount: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false
       },
       notes: {

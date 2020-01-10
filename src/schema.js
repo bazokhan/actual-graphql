@@ -28,6 +28,8 @@ const typeDefs = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    count: Int
+    balance: Float
   }
 
   input CreateAccountInput {

@@ -340,7 +340,13 @@ const resolvers = {
   Account: {
     user: async account => account.getUser(),
     transactions: async account => account.getTransactions(),
-    deleted: async account => Boolean(account.tombstone)
+    deleted: async account => Boolean(account.tombstone),
+    count: async account => account.countTransactions(),
+    balance: async (account, _, { models }) => {
+      return models.Transaction.sum("amount", {
+        where: { acct: account.id }
+      });
+    }
   },
   Payee: {
     account: async payee => payee.getAccount(),
