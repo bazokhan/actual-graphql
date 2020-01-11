@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Account = sequelize.define(
-    "Account",
+    'Account',
     {
       name: {
         type: DataTypes.STRING,
@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   Account.associate = models => {
-    Account.hasMany(models.Transaction, { foreignKey: "acct" });
-    Account.belongsTo(models.User, { foreignKey: "userId" });
+    Account.hasMany(models.Transaction, { foreignKey: 'acct' });
+    Account.belongsTo(models.User, { foreignKey: 'userId' });
   };
   return Account;
 };

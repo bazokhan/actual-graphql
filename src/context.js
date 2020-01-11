@@ -15,7 +15,6 @@ const context = async ({ req }) => {
       if (decoded) {
         const author = await models.User.findByPk(decoded.id);
         if (author) {
-          console.log(author);
           return { models, author, ...req.headers };
         }
       }
