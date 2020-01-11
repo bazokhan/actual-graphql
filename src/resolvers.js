@@ -23,6 +23,19 @@ const numerizeDate = dateIsoString => {
   }
 };
 
+const isValidNameLength = name => name.length > 3;
+const isValidNameChars = name => {
+  const nameRegex = /^\w+$/;
+  return nameRegex.test(name);
+};
+
+const isValidEmail = email => {
+  const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return emailRegex.test(email);
+};
+
+const isValidPassword = pass => pass.length > 5;
+
 const resolvers = {
   Token,
   Query: {
@@ -63,14 +76,32 @@ const resolvers = {
       }
       return token;
     },
-    createUser: async (root, { user: { name, email, password } }, { models }) =>
-      models.User.create({
+    createUser: async (
+      root,
+      { user: { name, email, password } },
+      { models }
+    ) => {
+      if (!isValidNameLength(name))
+        return new Error(
+          "Username is not valid. Minimum of 5 characters needed."
+        );
+      if (!isValidNameChars(name))
+        return new Error(
+          "Username is not valid. Only letters, numbers and '-' are  acceptable."
+        );
+      if (!isValidEmail(email)) return new Error("Email is not valid.");
+      if (!isValidPassword(password))
+        return new Error(
+          "Password is not valid. Minimum of 6 characters needed"
+        );
+      return models.User.create({
         id: uuidv1(),
         name,
         email,
         tombstone: 0,
         password: await bcrypt.hash(password, 10)
-      }),
+      });
+    },
     createAccount: async (root, { account: { userId, name } }, { models }) =>
       models.Account.create({ id: uuidv1(), userId, name, tombstone: 0 }),
     createAccounts: async (root, { accounts }, { models }) => {

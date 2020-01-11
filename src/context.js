@@ -10,12 +10,13 @@ const context = async ({ req, res }) => {
       try {
         decoded = jwt.verify(token, "112156s4agf3qrewgr$#%@#$");
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         throw new AuthenticationError("Invalid Token");
       }
       if (decoded) {
         const author = await models.User.findByPk(decoded.id);
-        if(author) {
+        if (author) {
+          console.log(author);
           return { models, author, ...req.headers };
         }
       }
