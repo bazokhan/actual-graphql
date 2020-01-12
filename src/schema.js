@@ -77,6 +77,7 @@ const typeDefs = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    balance: Float
   }
 
   input CreateCategoryInput {
