@@ -6,5 +6,7 @@ module.exports = {
   payees: async (root, args, { models }) => models.Payee.findAll(),
   catGroups: async (root, args, { models }) => models.CategoryGroup.findAll(),
   categories: async (root, args, { models }) => models.Category.findAll(),
-  transactions: async (root, args, { models }) => models.Transaction.findAll()
+  transactions: async (root, args, { models }) => models.Transaction.findAll(),
+  invoices: async (root, args, { models }) => models.Invoice.findAll(),
+  products: async (root, args, { models }) => models.Product.findAll()
 };

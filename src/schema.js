@@ -112,6 +112,38 @@ const typeDefs = gql`
     payeeName: String
   }
 
+  type Invoice {
+    id: ID!
+    amountDue: Float!
+    dateDue: String
+    deleted: Boolean!
+    transactions: [Transaction]
+    products: [Product]
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input CreateInvoiceInput {
+    amountDue: Float!
+    dateDue: String
+    transactionsIds: [ID]
+    productsIds: [ID]
+  }
+
+  type Product {
+    id: ID!
+    name: String!
+    deleted: Boolean!
+    invoices: [Invoice]
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input CreateProductInput {
+    name: String!
+    invoicesIds: [ID]
+  }
+
   input LoginInput {
     name: String
     email: String
@@ -125,6 +157,8 @@ const typeDefs = gql`
     catGroups: [CategoryGroup!]!
     categories: [Category!]!
     transactions: [Transaction!]!
+    invoices: [Invoice!]!
+    products: [Product!]!
   }
 
   type Mutation {
@@ -135,6 +169,8 @@ const typeDefs = gql`
     createCatGroup(group: CreateCatGroupInput!): CategoryGroup!
     createCategory(category: CreateCategoryInput!): Category!
     createTransaction(transaction: CreateTransactionInput!): Transaction!
+    createInvoice(invoice: CreateInvoiceInput): Invoice!
+    createProduct(product: CreateProductInput): Product!
     createAccounts(accounts: [CreateAccountInput!]!): [Account!]
     createPayees(payees: [CreatePayeeInput!]!): [Payee!]
     createCatGroups(groups: [CreateCatGroupInput!]!): [CategoryGroup!]

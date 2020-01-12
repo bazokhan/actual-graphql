@@ -2,40 +2,20 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Transactions', {
+    return queryInterface.createTable('Invoices', {
       id: {
         allowNull: false,
         autoIncrement: false,
         primaryKey: true,
         type: Sequelize.STRING
       },
-      amount: {
-        allowNull: false,
+      amountDue: {
+        allowNull: true,
         type: Sequelize.FLOAT
       },
-      notes: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
-      date: {
+      dateDue: {
         allowNull: false,
         type: Sequelize.INTEGER
-      },
-      acct: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      category: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      payeeId: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      invoiceId: {
-        allowNull: true,
-        type: Sequelize.STRING
       },
       tombstone: {
         allowNull: false,
@@ -53,6 +33,6 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('Transactions');
+    return queryInterface.dropTable('Invoices');
   }
 };

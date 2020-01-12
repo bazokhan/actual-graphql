@@ -7,6 +7,8 @@ const Payee = require('./Payee.resolvers');
 const CategoryGroup = require('./CategoryGroup.resolvers');
 const Category = require('./Category.resolvers');
 const Transaction = require('./Transaction.resolvers');
+const Invoice = require('./Invoice.resolvers');
+const Product = require('./Product.resolvers');
 
 const resolvers = {
   Token,
@@ -17,7 +19,9 @@ const resolvers = {
   Payee,
   CategoryGroup,
   Category,
-  Transaction
+  Transaction,
+  Invoice,
+  Product
 };
 
 module.exports = resolvers;
