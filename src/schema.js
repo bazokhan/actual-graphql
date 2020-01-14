@@ -112,6 +112,16 @@ const typeDefs = gql`
     payeeName: String
   }
 
+  input UpdateTransactionInput {
+    amount: Float
+    notes: String
+    date: String
+    accountId: ID
+    categoryId: ID
+    payeeId: ID
+    deleted: Boolean
+  }
+
   type Invoice {
     id: ID!
     amountDue: Float!
@@ -169,6 +179,10 @@ const typeDefs = gql`
     createCatGroup(group: CreateCatGroupInput!): CategoryGroup!
     createCategory(category: CreateCategoryInput!): Category!
     createTransaction(transaction: CreateTransactionInput!): Transaction!
+    updateTransaction(
+      id: ID!
+      transaction: UpdateTransactionInput
+    ): Transaction!
     createInvoice(invoice: CreateInvoiceInput): Invoice!
     createProduct(product: CreateProductInput): Product!
     createAccounts(accounts: [CreateAccountInput!]!): [Account!]

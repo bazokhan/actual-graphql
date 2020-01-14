@@ -18,6 +18,20 @@ module.exports = {
       payeeId,
       tombstone: 0
     }),
+  updateTransaction: async (root, { id, transaction }, { models }) => {
+    let target;
+    try {
+      target = await models.Transaction.findByPk(id);
+      Object.keys(transaction).reduce(async (prev, key) => {
+        prev = await prev;
+        await prev.update({ [key]: transaction[key] });
+        return prev;
+      }, target);
+    } catch (ex) {
+      console.log(ex);
+    }
+    return target;
+  },
   createTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(
       async (
