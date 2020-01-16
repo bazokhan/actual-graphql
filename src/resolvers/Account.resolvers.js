@@ -5,7 +5,7 @@ module.exports = {
   count: async account => account.countTransactions(),
   balance: async (account, _, { models }) => {
     return models.Transaction.sum('amount', {
-      where: { acct: account.id }
+      where: { accountId: account.id }
     });
   }
 };

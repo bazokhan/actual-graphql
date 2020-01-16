@@ -4,7 +4,7 @@ module.exports = {
   deleted: async category => Boolean(category.tombstone),
   balance: async (category, _, { models }) => {
     return models.Transaction.sum('amount', {
-      where: { category: category.id }
+      where: { categoryId: category.id }
     });
   }
 };

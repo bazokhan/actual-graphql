@@ -13,8 +13,8 @@ module.exports = {
       amount,
       notes,
       date: numerizeDate(date),
-      acct: accountId,
-      category: categoryId,
+      accountId,
+      categoryId,
       payeeId,
       tombstone: 0
     }),
@@ -23,6 +23,8 @@ module.exports = {
     try {
       target = await models.Transaction.findByPk(id);
       Object.keys(transaction).reduce(async (prev, key) => {
+        console.log(key, transaction[key]);
+        console.log(models.Account.findByPk(transaction[key]));
         prev = await prev;
         await prev.update({ [key]: transaction[key] });
         return prev;
@@ -112,8 +114,8 @@ module.exports = {
             amount,
             notes,
             date,
-            acct: accounts[0].id,
-            category: categories[0].id,
+            accountId: accounts[0].id,
+            categoryId: categories[0].id,
             payeeId: payees[0].id,
             tombstone: 0
           });
