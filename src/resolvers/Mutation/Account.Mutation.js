@@ -21,7 +21,9 @@ module.exports = {
   deleteAccount: async (root, { id }, { models }) => {
     const targetAccount = await models.Account.findOne({ where: { id } });
     if (!targetAccount) return null;
-    const hasTransactions = await targetAccount.countTransactions();
+    const hasTransactions = await targetAccount.countTransactions({
+      where: { tombstone: 0 }
+    });
     if (hasTransactions)
       return new Error("This account has transactions. It can't be deleted.");
     return targetAccount.update({

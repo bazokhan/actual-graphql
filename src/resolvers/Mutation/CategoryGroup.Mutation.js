@@ -38,9 +38,11 @@ module.exports = {
     }, []);
   },
   deleteGroup: async (root, { id }, { models }) => {
-    const targetGroup = await models.Group.findOne({ where: { id } });
+    const targetGroup = await models.CategoryGroup.findOne({ where: { id } });
     if (!targetGroup) return null;
-    const hasCategories = await targetGroup.countGroups();
+    const hasCategories = await targetGroup.countCategories({
+      where: { tombstone: 0 }
+    });
     console.log(hasCategories);
     if (hasCategories) {
       return new Error("This group has categories. It can't be deleted.");

@@ -48,7 +48,9 @@ module.exports = {
   deleteCategory: async (root, { id }, { models }) => {
     const targetCategory = await models.Category.findOne({ where: { id } });
     if (!targetCategory) return null;
-    const hasTransactions = await targetCategory.countTransactions();
+    const hasTransactions = await targetCategory.countTransactions({
+      where: { tombstone: 0 }
+    });
     console.log(hasTransactions);
     if (hasTransactions) {
       return new Error("This category has transactions. It can't be deleted.");
