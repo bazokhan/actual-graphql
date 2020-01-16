@@ -45,6 +45,8 @@ const typeDefs = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    count: Int
+    balance: Float
   }
 
   input CreatePayeeInput {
@@ -61,6 +63,8 @@ const typeDefs = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    count: Int
+    balance: Float
   }
 
   input CreateCatGroupInput {
@@ -77,6 +81,7 @@ const typeDefs = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    count: Int
     balance: Float
   }
 
@@ -190,6 +195,10 @@ const typeDefs = gql`
     createCatGroups(groups: [CreateCatGroupInput!]!): [CategoryGroup!]
     createCategories(categories: [CreateCategoryInput!]!): [Category!]
     createTransactions(transactions: [CreateTransactionInput!]!): [Transaction]!
+    deleteAccount(id: ID!): Account
+    deleteCategory(id: ID!): Category
+    deleteGroup(id: ID!): CategoryGroup
+    deletePayee(id: ID!): Payee
   }
 `;
 

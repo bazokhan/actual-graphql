@@ -44,5 +44,17 @@ module.exports = {
       }
       return prev;
     }, []);
+  },
+  deleteCategory: async (root, { id }, { models }) => {
+    const targetCategory = await models.Category.findOne({ where: { id } });
+    if (!targetCategory) return null;
+    const hasTransactions = await targetCategory.countTransactions();
+    console.log(hasTransactions);
+    if (hasTransactions) {
+      return new Error("This category has transactions. It can't be deleted.");
+    }
+    return targetCategory.update({
+      tombstone: 1
+    });
   }
 };

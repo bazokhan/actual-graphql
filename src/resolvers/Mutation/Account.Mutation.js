@@ -17,5 +17,15 @@ module.exports = {
       }
       return prev;
     }, []);
+  },
+  deleteAccount: async (root, { id }, { models }) => {
+    const targetAccount = await models.Account.findOne({ where: { id } });
+    if (!targetAccount) return null;
+    const hasTransactions = await targetAccount.countTransactions();
+    if (hasTransactions)
+      return new Error("This account has transactions. It can't be deleted.");
+    return targetAccount.update({
+      tombstone: 1
+    });
   }
 };

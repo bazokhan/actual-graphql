@@ -47,5 +47,15 @@ module.exports = {
       }
       return prev;
     }, []);
+  },
+  deletePayee: async (root, { id }, { models }) => {
+    const targetPayee = await models.Payee.findOne({ where: { id } });
+    if (!targetPayee) return null;
+    const hasTransactions = await targetPayee.countTransactions();
+    if (hasTransactions)
+      return new Error("This payee has transactions. It can't be deleted.");
+    return targetPayee.update({
+      tombstone: 1
+    });
   }
 };
