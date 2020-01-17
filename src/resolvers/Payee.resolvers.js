@@ -1,5 +1,10 @@
 module.exports = {
-  account: async payee => payee.getAccount({ where: { tombstone: 0 } }),
+  account: async payee => {
+    const transferAccount = await payee.getAccount();
+    return transferAccount
+      ? await payee.getAccount({ where: { tombstone: 0 } })
+      : null;
+  },
   transactions: async payee =>
     payee.getTransactions({ where: { tombstone: 0 } }),
   deleted: async payee => Boolean(payee.tombstone),
