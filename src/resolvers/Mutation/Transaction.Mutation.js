@@ -23,8 +23,6 @@ module.exports = {
     try {
       target = await models.Transaction.findByPk(id);
       Object.keys(transaction).reduce(async (prev, key) => {
-        console.log(key, transaction[key]);
-        console.log(models.Account.findByPk(transaction[key]));
         prev = await prev;
         await prev.update({ [key]: transaction[key] });
         return prev;

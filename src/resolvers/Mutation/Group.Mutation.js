@@ -43,7 +43,6 @@ module.exports = {
     const hasCategories = await targetGroup.countCategories({
       where: { tombstone: 0 }
     });
-    console.log(hasCategories);
     if (hasCategories) {
       return new Error("This group has categories. It can't be deleted.");
     }

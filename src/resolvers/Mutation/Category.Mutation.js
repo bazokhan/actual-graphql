@@ -65,7 +65,6 @@ module.exports = {
     const hasTransactions = await targetCategory.countTransactions({
       where: { tombstone: 0 }
     });
-    console.log(hasTransactions);
     if (hasTransactions) {
       return new Error("This category has transactions. It can't be deleted.");
     }
