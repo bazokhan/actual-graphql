@@ -1,31 +1,31 @@
 const uuidv1 = require('uuid/v1');
 
 module.exports = {
-  createCatGroup: async (root, { group: { isIncome, name } }, { models }) =>
+  createGroup: async (root, { group: { isIncome, name } }, { models }) =>
     isIncome
-      ? models.CategoryGroup.create({
+      ? models.Group.create({
           id: uuidv1(),
           isIncome: 1,
           name,
           tombstone: 0
         })
-      : models.CategoryGroup.create({
+      : models.Group.create({
           id: uuidv1(),
           isIncome: 0,
           name,
           tombstone: 0
         }),
-  createCatGroups: async (root, { groups }, { models }) => {
+  createGroups: async (root, { groups }, { models }) => {
     return groups.reduce(async (prev, { isIncome, name }) => {
       prev = await prev;
       const createdGroup = isIncome
-        ? await models.CategoryGroup.create({
+        ? await models.Group.create({
             id: uuidv1(),
             isIncome: 1,
             name,
             tombstone: 0
           })
-        : await models.CategoryGroup.create({
+        : await models.Group.create({
             id: uuidv1(),
             isIncome: 0,
             name,
@@ -38,7 +38,7 @@ module.exports = {
     }, []);
   },
   deleteGroup: async (root, { id }, { models }) => {
-    const targetGroup = await models.CategoryGroup.findOne({ where: { id } });
+    const targetGroup = await models.Group.findOne({ where: { id } });
     if (!targetGroup) return null;
     const hasCategories = await targetGroup.countCategories({
       where: { tombstone: 0 }

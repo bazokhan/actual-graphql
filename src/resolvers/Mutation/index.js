@@ -1,7 +1,7 @@
 const UserMutation = require('./User.Mutation');
 const AccountMutation = require('./Account.Mutation');
 const PayeeMutation = require('./Payee.Mutation');
-const CategoryGroupMutation = require('./CategoryGroup.Mutation');
+const GroupMutation = require('./Group.Mutation');
 const CategoryMutation = require('./Category.Mutation');
 const TransactionMutation = require('./Transaction.Mutation');
 const InvoiceMutation = require('./Invoice.Mutation');
@@ -11,7 +11,7 @@ module.exports = {
   ...UserMutation,
   ...AccountMutation,
   ...PayeeMutation,
-  ...CategoryGroupMutation,
+  ...GroupMutation,
   ...CategoryMutation,
   ...TransactionMutation,
   ...InvoiceMutation,

@@ -55,7 +55,7 @@ const typeDefs = gql`
     accountName: String
   }
 
-  type CategoryGroup {
+  type Group {
     id: ID!
     name: String!
     isIncome: Boolean!
@@ -67,7 +67,7 @@ const typeDefs = gql`
     balance: Float
   }
 
-  input CreateCatGroupInput {
+  input CreateGroupInput {
     name: String!
     isIncome: Boolean!
   }
@@ -76,7 +76,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     isIncome: Boolean!
-    group: CategoryGroup!
+    group: Group!
     transactions: [Transaction!]!
     deleted: Boolean!
     createdAt: String!
@@ -89,6 +89,11 @@ const typeDefs = gql`
     name: String!
     groupId: ID
     groupName: String
+  }
+
+  input UpdateCategoryInput {
+    name: String
+    groupId: ID
   }
 
   type Transaction {
@@ -113,7 +118,7 @@ const typeDefs = gql`
     payeeId: ID
     accountName: String
     categoryName: String
-    categoryGroupName: String
+    groupName: String
     payeeName: String
   }
 
@@ -169,7 +174,7 @@ const typeDefs = gql`
     users: [User!]!
     accounts: [Account!]!
     payees: [Payee!]!
-    catGroups: [CategoryGroup!]!
+    groups: [Group!]!
     categories: [Category!]!
     transactions: [Transaction!]!
     invoices: [Invoice!]!
@@ -181,7 +186,7 @@ const typeDefs = gql`
     createUser(user: CreateUserInput!): User!
     createAccount(account: CreateAccountInput!): Account!
     createPayee(payee: CreatePayeeInput!): Payee!
-    createCatGroup(group: CreateCatGroupInput!): CategoryGroup!
+    createGroup(group: CreateGroupInput!): Group!
     createCategory(category: CreateCategoryInput!): Category!
     createTransaction(transaction: CreateTransactionInput!): Transaction!
     updateTransaction(
@@ -192,13 +197,14 @@ const typeDefs = gql`
     createProduct(product: CreateProductInput): Product!
     createAccounts(accounts: [CreateAccountInput!]!): [Account!]
     createPayees(payees: [CreatePayeeInput!]!): [Payee!]
-    createCatGroups(groups: [CreateCatGroupInput!]!): [CategoryGroup!]
+    createGroups(groups: [CreateGroupInput!]!): [Group!]
     createCategories(categories: [CreateCategoryInput!]!): [Category!]
     createTransactions(transactions: [CreateTransactionInput!]!): [Transaction]!
     deleteAccount(id: ID!): Account
     deleteCategory(id: ID!): Category
-    deleteGroup(id: ID!): CategoryGroup
+    deleteGroup(id: ID!): Group
     deletePayee(id: ID!): Payee
+    updateCategory(id: ID!, category: UpdateCategoryInput): Category!
   }
 `;
 

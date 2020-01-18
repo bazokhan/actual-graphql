@@ -4,7 +4,7 @@ const Mutation = require('./Mutation');
 const User = require('./User.resolvers');
 const Account = require('./Account.resolvers');
 const Payee = require('./Payee.resolvers');
-const CategoryGroup = require('./CategoryGroup.resolvers');
+const Group = require('./Group.resolvers');
 const Category = require('./Category.resolvers');
 const Transaction = require('./Transaction.resolvers');
 const Invoice = require('./Invoice.resolvers');
@@ -17,7 +17,7 @@ const resolvers = {
   User,
   Account,
   Payee,
-  CategoryGroup,
+  Group,
   Category,
   Transaction,
   Invoice,

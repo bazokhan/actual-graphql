@@ -17,7 +17,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
-      catGroup: {
+      groupId: {
         allowNull: false,
         type: Sequelize.STRING
       },

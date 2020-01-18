@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   );
   Category.associate = models => {
     Category.hasMany(models.Transaction, { foreignKey: 'categoryId' });
-    Category.belongsTo(models.CategoryGroup, { foreignKey: 'catGroup' });
+    Category.belongsTo(models.Group, { foreignKey: 'groupId' });
   };
   return Category;
 };

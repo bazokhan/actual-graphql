@@ -46,7 +46,7 @@ module.exports = {
           accountName,
           categoryId,
           categoryName,
-          categoryGroupName,
+          groupName,
           payeeId,
           payeeName
         }
@@ -71,12 +71,7 @@ module.exports = {
               id: payeeId
             }
           });
-        } else if (
-          accountName &&
-          categoryName &&
-          categoryGroupName &&
-          payeeName
-        ) {
+        } else if (accountName && categoryName && groupName && payeeName) {
           accounts = await models.Account.findAll({
             where: {
               name: accountName
@@ -84,19 +79,15 @@ module.exports = {
           });
           if (!accounts)
             return new Error("Couldn't find corresponding ACCOUNT");
-          const categoryGroups = await models.CategoryGroup.findAll({
+          const groups = await models.Group.findAll({
             where: {
-              name: categoryGroupName
+              name: groupName
             }
           });
-          if (!categoryGroups)
-            return new Error("Couldn't find corresponding GROUP");
+          if (!groups) return new Error("Couldn't find corresponding GROUP");
           categories = await models.Category.findAll({
             where: {
-              [Op.and]: [
-                { name: categoryName },
-                { catGroup: categoryGroups[0].id }
-              ]
+              [Op.and]: [{ name: categoryName }, { groupId: groups[0].id }]
             }
           });
           if (!categories)

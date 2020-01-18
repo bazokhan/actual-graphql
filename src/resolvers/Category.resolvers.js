@@ -1,6 +1,5 @@
 module.exports = {
-  group: async category =>
-    category.getCategoryGroup({ where: { tombstone: 0 } }),
+  group: async category => category.getGroup({ where: { tombstone: 0 } }),
   transactions: async category =>
     category.getTransactions({ where: { tombstone: 0 } }),
   deleted: async category => Boolean(category.tombstone),

@@ -10,8 +10,8 @@ module.exports = {
   payees: async (root, args, { models }) => {
     return await models.Payee.findAll({ where: { tombstone: 0 } });
   },
-  catGroups: async (root, args, { models }) => {
-    return await models.CategoryGroup.findAll({ where: { tombstone: 0 } });
+  groups: async (root, args, { models }) => {
+    return await models.Group.findAll({ where: { tombstone: 0 } });
   },
   categories: async (root, args, { models }) => {
     return await models.Category.findAll({ where: { tombstone: 0 } });

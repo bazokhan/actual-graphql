@@ -2,40 +2,54 @@ const uuidv1 = require('uuid/v1');
 
 module.exports = {
   createCategory: async (root, { category: { groupId, name } }, { models }) => {
-    const categoryGroup = await models.CategoryGroup.findByPk(groupId);
+    const group = await models.Group.findByPk(groupId);
     return models.Category.create({
       id: uuidv1(),
-      isIncome: categoryGroup.isIncome || 0,
+      isIncome: group.isIncome || 0,
       name,
-      catGroup: groupId,
+      groupId,
       tombstone: 0
     });
+  },
+  updateCategory: async (root, { id, category }, { models }) => {
+    let target;
+    try {
+      target = await models.Category.findByPk(id);
+      Object.keys(category).reduce(async (prev, key) => {
+        prev = await prev;
+        await prev.update({ [key]: category[key] });
+        return prev;
+      }, target);
+    } catch (ex) {
+      console.log(ex);
+    }
+    return target;
   },
   createCategories: async (root, { categories }, { models }) => {
     return categories.reduce(async (prev, { groupId, groupName, name }) => {
       prev = await prev;
-      let categoryGroups;
+      let groups;
       if (groupId) {
-        categoryGroups = await models.CategoryGroup.findAll({
+        groups = await models.Group.findAll({
           where: {
             id: groupId
           }
         });
       } else if (groupName) {
-        categoryGroups = await models.CategoryGroup.findAll({
+        groups = await models.Group.findAll({
           where: {
             name: groupName
           }
         });
       }
-      if (!categoryGroups || !categoryGroups.length) {
-        return new Error("Couldn't find corresponding category groups");
+      if (!groups || !groups.length) {
+        return new Error("Couldn't find corresponding groups");
       }
       const createdCategory = await models.Category.create({
         id: uuidv1(),
-        isIncome: categoryGroups[0].isIncome || 0,
+        isIncome: groups[0].isIncome || 0,
         name,
-        catGroup: categoryGroups[0].id,
+        groupId: groups[0].id,
         tombstone: 0
       });
 
