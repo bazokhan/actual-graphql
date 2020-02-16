@@ -3,14 +3,16 @@ const uuidv1 = require('uuid/v1');
 module.exports = {
   createAccount: async (root, { account: { userId, name } }, { models }) =>
     models.Account.create({ id: uuidv1(), userId, name, tombstone: 0 }),
-  createAccounts: async (root, { accounts }, { models }) => {
-    return accounts.reduce(async (prev, { userId, name }) => {
+  // For migration purpose only
+  createAccounts: async (root, { accounts }, { models, author }) => {
+    if (!author || !author.id) return new Error('No author found!');
+    return accounts.reduce(async (prev, { name, tombstone }) => {
       prev = await prev;
       const createdAccount = await models.Account.create({
         id: uuidv1(),
-        userId,
+        userId: author.id,
         name,
-        tombstone: 0
+        tombstone
       });
       if (createdAccount) {
         prev.push(createdAccount);

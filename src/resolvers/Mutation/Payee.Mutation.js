@@ -9,45 +9,49 @@ module.exports = {
           tombstone: 0
         })
       : models.Payee.create({ id: uuidv1(), name, tombstone: 0 }),
+  // For migration purpose only
   createPayees: async (root, { payees }, { models }) => {
     try {
-      return payees.reduce(async (prev, { accountId, accountName, name }) => {
-        prev = await prev;
-        let accounts;
-        if (accountId) {
-          accounts = await models.Account.findAll({
-            where: {
-              id: accountId
+      return payees.reduce(
+        async (prev, { accountId, accountName, name, tombstone }) => {
+          prev = await prev;
+          let accounts;
+          if (accountId) {
+            accounts = await models.Account.findAll({
+              where: {
+                id: accountId
+              }
+            });
+            if (!accounts || !accounts.length) {
+              return new Error("Couldn't find corresponding accounts by id");
             }
-          });
-          if (!accounts || !accounts.length) {
-            return new Error("Couldn't find corresponding accounts by id");
-          }
-        } else if (accountName) {
-          accounts = await models.Account.findAll({
-            where: {
-              name: accountName
+          } else if (accountName) {
+            accounts = await models.Account.findAll({
+              where: {
+                name: accountName
+              }
+            });
+            if (!accounts || !accounts.length) {
+              return new Error("Couldn't find corresponding accounts by name");
             }
-          });
-          if (!accounts || !accounts.length) {
-            return new Error("Couldn't find corresponding accounts by name");
           }
-        }
 
-        const createdPayee =
-          accounts && accounts.length
-            ? await models.Payee.create({
-                id: uuidv1(),
-                transferAccount: accounts[0].id,
-                name,
-                tombstone: 0
-              })
-            : await models.Payee.create({ id: uuidv1(), name, tombstone: 0 });
-        if (createdPayee) {
-          prev.push(createdPayee);
-        }
-        return prev;
-      }, []);
+          const createdPayee =
+            accounts && accounts.length
+              ? await models.Payee.create({
+                  id: uuidv1(),
+                  transferAccount: accounts[0].id,
+                  name,
+                  tombstone
+                })
+              : await models.Payee.create({ id: uuidv1(), name, tombstone });
+          if (createdPayee) {
+            prev.push(createdPayee);
+          }
+          return prev;
+        },
+        []
+      );
     } catch (ex) {
       console.log(ex);
     }

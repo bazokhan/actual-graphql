@@ -32,6 +32,7 @@ module.exports = {
     }
     return target;
   },
+  // For migration purpose only
   createTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(
       async (
@@ -46,7 +47,8 @@ module.exports = {
           categoryName,
           groupName,
           payeeId,
-          payeeName
+          payeeName,
+          tombstone
         }
       ) => {
         prev = await prev;
@@ -106,7 +108,7 @@ module.exports = {
             accountId: accounts[0].id,
             categoryId: categories[0].id,
             payeeId: payees[0].id,
-            tombstone: 0
+            tombstone
           });
 
           if (createdTransaction) {

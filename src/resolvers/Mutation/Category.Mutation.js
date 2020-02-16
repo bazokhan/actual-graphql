@@ -25,39 +25,43 @@ module.exports = {
     }
     return target;
   },
+  // For migration purpose only
   createCategories: async (root, { categories }, { models }) => {
-    return categories.reduce(async (prev, { groupId, groupName, name }) => {
-      prev = await prev;
-      let groups;
-      if (groupId) {
-        groups = await models.Group.findAll({
-          where: {
-            id: groupId
-          }
+    return categories.reduce(
+      async (prev, { groupId, groupName, name, tombstone }) => {
+        prev = await prev;
+        let groups;
+        if (groupId) {
+          groups = await models.Group.findAll({
+            where: {
+              id: groupId
+            }
+          });
+        } else if (groupName) {
+          groups = await models.Group.findAll({
+            where: {
+              name: groupName
+            }
+          });
+        }
+        if (!groups || !groups.length) {
+          return new Error("Couldn't find corresponding groups");
+        }
+        const createdCategory = await models.Category.create({
+          id: uuidv1(),
+          isIncome: groups[0].isIncome || 0,
+          name,
+          groupId: groups[0].id,
+          tombstone
         });
-      } else if (groupName) {
-        groups = await models.Group.findAll({
-          where: {
-            name: groupName
-          }
-        });
-      }
-      if (!groups || !groups.length) {
-        return new Error("Couldn't find corresponding groups");
-      }
-      const createdCategory = await models.Category.create({
-        id: uuidv1(),
-        isIncome: groups[0].isIncome || 0,
-        name,
-        groupId: groups[0].id,
-        tombstone: 0
-      });
 
-      if (createdCategory) {
-        prev.push(createdCategory);
-      }
-      return prev;
-    }, []);
+        if (createdCategory) {
+          prev.push(createdCategory);
+        }
+        return prev;
+      },
+      []
+    );
   },
   deleteCategory: async (root, { id }, { models }) => {
     const targetCategory = await models.Category.findOne({ where: { id } });

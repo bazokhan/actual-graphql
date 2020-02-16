@@ -34,7 +34,7 @@ const typeDefs = gql`
 
   input CreateAccountInput {
     name: String!
-    userId: ID!
+    tombstone: Int
   }
 
   type Payee {
@@ -53,6 +53,7 @@ const typeDefs = gql`
     name: String!
     accountId: ID
     accountName: String
+    tombstone: Int
   }
 
   type Group {
@@ -70,6 +71,7 @@ const typeDefs = gql`
   input CreateGroupInput {
     name: String!
     isIncome: Boolean!
+    tombstone: Int
   }
 
   type Category {
@@ -89,6 +91,7 @@ const typeDefs = gql`
     name: String!
     groupId: ID
     groupName: String
+    tombstone: Int
   }
 
   input UpdateCategoryInput {
@@ -120,6 +123,7 @@ const typeDefs = gql`
     categoryName: String
     groupName: String
     payeeName: String
+    tombstone: Int
   }
 
   input UpdateTransactionInput {
@@ -171,14 +175,14 @@ const typeDefs = gql`
   }
 
   type Query {
-    users: [User!]!
-    accounts: [Account!]!
-    payees: [Payee!]!
-    groups: [Group!]!
-    categories: [Category!]!
-    transactions: [Transaction!]!
-    invoices: [Invoice!]!
-    products: [Product!]!
+    users(includeDeleted: Boolean, onlyDeleted: Boolean): [User!]!
+    accounts(includeDeleted: Boolean, onlyDeleted: Boolean): [Account!]!
+    payees(includeDeleted: Boolean, onlyDeleted: Boolean): [Payee!]!
+    groups(includeDeleted: Boolean, onlyDeleted: Boolean): [Group!]!
+    categories(includeDeleted: Boolean, onlyDeleted: Boolean): [Category!]!
+    transactions(includeDeleted: Boolean, onlyDeleted: Boolean): [Transaction!]!
+    invoices(includeDeleted: Boolean, onlyDeleted: Boolean): [Invoice!]!
+    products(includeDeleted: Boolean, onlyDeleted: Boolean): [Product!]!
   }
 
   type Mutation {
