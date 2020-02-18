@@ -15,21 +15,22 @@ module.exports = {
           name,
           tombstone: 0
         }),
+  // For migration purpose only
   createGroups: async (root, { groups }, { models }) => {
-    return groups.reduce(async (prev, { isIncome, name }) => {
+    return groups.reduce(async (prev, { isIncome, name, tombstone }) => {
       prev = await prev;
       const createdGroup = isIncome
         ? await models.Group.create({
             id: uuidv1(),
             isIncome: 1,
             name,
-            tombstone: 0
+            tombstone
           })
         : await models.Group.create({
             id: uuidv1(),
             isIncome: 0,
             name,
-            tombstone: 0
+            tombstone
           });
       if (createdGroup) {
         prev.push(createdGroup);
