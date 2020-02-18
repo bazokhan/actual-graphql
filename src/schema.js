@@ -204,6 +204,7 @@ const typeDefs = gql`
     deleteCategory(id: ID!): Category
     deleteGroup(id: ID!): Group
     deletePayee(id: ID!): Payee
+    deleteTransaction(id: ID!): Transaction
     updateCategory(id: ID!, category: UpdateCategoryInput): Category!
   }
 `;

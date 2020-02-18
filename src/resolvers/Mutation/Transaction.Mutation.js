@@ -32,6 +32,16 @@ module.exports = {
     }
     return target;
   },
+  deleteTransaction: async (root, { id }, { models }) => {
+    let target;
+    try {
+      target = await models.Transaction.findByPk(id);
+      await target.update({ tombstone: 1 });
+    } catch (ex) {
+      console.log(ex);
+    }
+    return target;
+  },
   createTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(
       async (
