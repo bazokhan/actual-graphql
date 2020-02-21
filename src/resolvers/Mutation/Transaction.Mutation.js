@@ -42,7 +42,6 @@ module.exports = {
     }
     return target;
   },
-  // For migration purpose only
   createTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(
       async (
@@ -112,6 +111,74 @@ module.exports = {
         try {
           const createdTransaction = await models.Transaction.create({
             id: uuidv1(),
+            amount,
+            notes,
+            date,
+            accountId: accounts[0].id,
+            categoryId: categories[0].id,
+            payeeId: payees[0].id,
+            tombstone
+          });
+
+          if (createdTransaction) {
+            prev.push(createdTransaction);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+        return prev;
+      },
+      []
+    );
+  },
+  // For migration purpose only
+  migrateTransactions: async (root, { transactions }, { models }) => {
+    return transactions.reduce(
+      async (
+        prev,
+        {
+          id,
+          amount,
+          notes,
+          date,
+          accountName,
+          categoryName,
+          groupName,
+          payeeName,
+          tombstone
+        }
+      ) => {
+        prev = await prev;
+        const alreadyExists = await models.Transaction.findByPk(id);
+        if (alreadyExists) return prev;
+        const accounts = await models.Account.findAll({
+          where: {
+            name: accountName
+          }
+        });
+        if (!accounts) return new Error("Couldn't find corresponding ACCOUNT");
+        const groups = await models.Group.findAll({
+          where: {
+            name: groupName
+          }
+        });
+        if (!groups) return new Error("Couldn't find corresponding GROUP");
+        const categories = await models.Category.findAll({
+          where: {
+            [Op.and]: [{ name: categoryName }, { groupId: groups[0].id }]
+          }
+        });
+        if (!categories)
+          return new Error("Couldn't find corresponding CATEGORY");
+        const payees = await models.Payee.findAll({
+          where: {
+            name: payeeName
+          }
+        });
+        if (!payees) return new Error("Couldn't find corresponding PAYEE");
+        try {
+          const createdTransaction = await models.Transaction.create({
+            id,
             amount,
             notes,
             date,
