@@ -9,6 +9,7 @@ const Category = require('./Category.resolvers');
 const Transaction = require('./Transaction.resolvers');
 const Invoice = require('./Invoice.resolvers');
 const Product = require('./Product.resolvers');
+const Service = require('./Service.resolvers');
 
 const resolvers = {
   Token,
@@ -21,7 +22,8 @@ const resolvers = {
   Category,
   Transaction,
   Invoice,
-  Product
+  Product,
+  Service
 };
 
 module.exports = resolvers;

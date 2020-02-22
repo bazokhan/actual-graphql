@@ -16,9 +16,15 @@ const addFragment = fragment => `
 `;
 
 const User = gql`
+  enum UserRoles {
+    SUPERADMIN
+    USER
+  }
+
   type User {
     id: ID!
     name: String!
+    role: UserRoles
     email: String!
     password: String!
     accounts: [Account!]!
@@ -195,10 +201,7 @@ const Service = gql`
   type Service {
     id: ID!
     owner: User!
-    admins: [User]
-    auditors: [User]
-    editors: [User]
-    guests: [User]
+    members: [User]
     accounts: [Account]
     payees: [Payee]
     groups: [Group]
@@ -230,6 +233,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    services: [Service!]!
     users(includeDeleted: Boolean, onlyDeleted: Boolean): [User!]!
     accounts(includeDeleted: Boolean, onlyDeleted: Boolean): [Account!]!
     payees(includeDeleted: Boolean, onlyDeleted: Boolean): [Payee!]!
@@ -271,20 +275,20 @@ const typeDefs = gql`
   }
 `;
 
-console.log(
-  typeDefs.definitions.find(def => def.name && def.name.value === 'User').fields
-);
+// console.log(
+//   typeDefs.definitions.find(def => def.name && def.name.value === 'User').fields
+// );
 
-console.log(
-  typeDefs.definitions.map(({ kind, name: { value }, description }) =>
-    description && description.value
-      ? {
-          name: value,
-          kind: kind.replace('TypeDefinition', ''),
-          description: description.value
-        }
-      : { name: value, kind: kind.replace('TypeDefinition', '') }
-  )
-);
+// console.log(
+//   typeDefs.definitions.map(({ kind, name: { value }, description }) =>
+//     description && description.value
+//       ? {
+//           name: value,
+//           kind: kind.replace('TypeDefinition', ''),
+//           description: description.value
+//         }
+//       : { name: value, kind: kind.replace('TypeDefinition', '') }
+//   )
+// );
 
 module.exports = typeDefs;

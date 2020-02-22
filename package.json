@@ -16,8 +16,12 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "migrate": "sequelize db:migrate",
+    "seed": "sequelize db:seed:all",
+    "unseed": "sequelize db:seed:undo:all",
+    "unseed-delete": "sequelize db:seed:undo:all && sequelize db:migrate:undo:all",
     "delete": "sequelize db:migrate:undo:all",
     "generate-migration": "sequelize migration:generate",
+    "generate-seed": "sequelize seed:generate",
     "lint": "eslint src"
   },
   "devDependencies": {

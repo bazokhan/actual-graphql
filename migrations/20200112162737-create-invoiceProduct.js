@@ -23,6 +23,10 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('InvoiceProducts');
+    try {
+      return queryInterface.dropTable('InvoiceProducts');
+    } catch (err) {
+      console.log(err);
+    }
   }
 };

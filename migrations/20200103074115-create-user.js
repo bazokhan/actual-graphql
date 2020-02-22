@@ -8,10 +8,18 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
+      serviceId: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
       name: {
         allowNull: false,
         type: Sequelize.STRING,
         unique: true
+      },
+      role: {
+        allowNull: false,
+        type: Sequelize.STRING
       },
       email: {
         allowNull: false,
@@ -37,6 +45,10 @@ module.exports = {
     });
   },
   down: queryInterface => {
-    return queryInterface.dropTable('Users');
+    try {
+      return queryInterface.dropTable('Users');
+    } catch (err) {
+      console.log(err);
+    }
   }
 };

@@ -9,6 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
+      serviceId: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       name: {
         allowNull: false,
         type: Sequelize.STRING
@@ -29,6 +33,10 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('Products');
+    try {
+      return queryInterface.dropTable('Products');
+    } catch (err) {
+      console.log(err);
+    }
   }
 };

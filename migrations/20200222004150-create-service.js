@@ -2,28 +2,17 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Groups', {
+    return queryInterface.createTable('Services', {
       id: {
         allowNull: false,
         autoIncrement: false,
         primaryKey: true,
         type: Sequelize.STRING
       },
-      serviceId: {
+      ownerId: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
-      },
-      name: {
-        allowNull: false,
-        type: Sequelize.STRING
-      },
-      isIncome: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      tombstone: {
-        allowNull: false,
-        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -38,7 +27,7 @@ module.exports = {
 
   down: queryInterface => {
     try {
-      return queryInterface.dropTable('Groups');
+      return queryInterface.dropTable('Services');
     } catch (err) {
       console.log(err);
     }

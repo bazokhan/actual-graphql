@@ -49,12 +49,15 @@ module.exports = {
     if (!isValidEmail(email)) return new Error('Email is not valid.');
     if (!isValidPassword(password))
       return new Error('Password is not valid. Minimum of 6 characters needed');
-    return models.User.create({
+    const newUser = await models.User.create({
       id: uuidv1(),
       name,
       email,
       tombstone: 0,
       password: await bcrypt.hash(password, 10)
+    });
+    newUser.createService({
+      id: uuidv1()
     });
   }
 };

@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
         allowNull: false
       },
+      role: {
+        allowNull: false,
+        type: DataTypes.STRING
+      },
       email: {
         type: DataTypes.STRING,
         unique: true,
@@ -27,6 +31,8 @@ module.exports = (sequelize, DataTypes) => {
   );
   User.associate = models => {
     User.hasMany(models.Account, { foreignKey: 'userId' });
+    User.hasOne(models.Service, { foreignKey: 'ownerId' });
+    User.belongsTo(models.Service, { as: 'viewer', foreignKey: 'serviceId' });
   };
   return User;
 };

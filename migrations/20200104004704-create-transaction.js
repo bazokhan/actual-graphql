@@ -9,6 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
+      serviceId: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       amount: {
         allowNull: false,
         type: Sequelize.FLOAT
@@ -53,6 +57,10 @@ module.exports = {
   },
 
   down: queryInterface => {
-    return queryInterface.dropTable('Transactions');
+    try {
+      return queryInterface.dropTable('Transactions');
+    } catch (err) {
+      console.log(err);
+    }
   }
 };

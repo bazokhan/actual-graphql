@@ -1,4 +1,10 @@
 module.exports = {
+  services: async (root, args, { models, author }) => {
+    if (!author || !author.id) return new Error('No author found!');
+    if (author.role !== 'SUPERADMIN')
+      return new Error('You are not authorized');
+    return models.Service.findAll();
+  },
   users: async (root, { includeDeleted }, { models }) => {
     return includeDeleted
       ? await models.User.findAll()
