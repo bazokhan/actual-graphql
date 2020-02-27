@@ -22,7 +22,9 @@
     "delete": "sequelize db:migrate:undo:all",
     "generate-migration": "sequelize migration:generate",
     "generate-seed": "sequelize seed:generate",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "map:sql": "node server",
+    "map:sql:dev": "nodemon server"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
