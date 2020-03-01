@@ -8,10 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
-      serviceId: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
       name: {
         allowNull: false,
         type: Sequelize.STRING,

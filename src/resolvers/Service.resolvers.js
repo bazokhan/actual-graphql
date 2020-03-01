@@ -1,6 +1,5 @@
 module.exports = {
   owner: async service => service.getOwner(),
-  members: async service => service.getUsers(),
   accounts: async (service, _, { models }) => {
     return models.Account.findAll({
       where: { serviceId: service.id }

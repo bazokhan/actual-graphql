@@ -26,7 +26,6 @@ module.exports = {
             id: user2Id,
             name: 'user',
             role: 'USER',
-            serviceId: service1Id,
             email: 'user@server.com',
             password: await bcrypt.hash('123456', 10),
             tombstone: 0,

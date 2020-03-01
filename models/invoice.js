@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   Invoice.associate = models => {
     Invoice.hasMany(models.Transaction, { foreignKey: 'invoiceId' });
     Invoice.belongsToMany(models.Product, { through: 'InvoiceProducts' });
+    Invoice.belongsTo(models.Service, { foreignKey: 'serviceId' });
   };
   return Invoice;
 };

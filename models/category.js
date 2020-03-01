@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
   Category.associate = models => {
     Category.hasMany(models.Transaction, { foreignKey: 'categoryId' });
     Category.belongsTo(models.Group, { foreignKey: 'groupId' });
+    Category.belongsTo(models.Service, { foreignKey: 'serviceId' });
   };
   return Category;
 };

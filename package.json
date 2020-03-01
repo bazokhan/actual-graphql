@@ -23,8 +23,8 @@
     "generate-migration": "sequelize migration:generate",
     "generate-seed": "sequelize seed:generate",
     "lint": "eslint src",
-    "map:sql": "node server",
-    "map:sql:dev": "nodemon server"
+    "map:sql": "cd server && node .",
+    "map:sql:dev": "cd server && nodemon --ignore client/*.js --ignore src/*.map.js"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",

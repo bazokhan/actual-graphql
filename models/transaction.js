@@ -27,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     Transaction.belongsTo(models.Account, { foreignKey: 'accountId' });
     Transaction.belongsTo(models.Category, { foreignKey: 'categoryId' });
     Transaction.belongsTo(models.Payee, { foreignKey: 'payeeId' });
+    Transaction.belongsTo(models.Service, { foreignKey: 'serviceId' });
+    Transaction.belongsTo(models.Invoice, { foreignKey: 'invoiceId' });
   };
   return Transaction;
 };

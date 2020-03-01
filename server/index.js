@@ -5,9 +5,8 @@ const ssr = require('./ssr');
 const app = express();
 
 app.use(compression());
-app.use(express.static(path.resolve(__dirname, './public')));
-
 app.use('/', ssr);
+app.use(express.static(path.resolve(__dirname, './client')));
 
 const port = process.env.PORT || 3030;
 app.listen(port, () => {

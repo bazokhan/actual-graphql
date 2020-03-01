@@ -30,9 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     {}
   );
   User.associate = models => {
-    User.hasMany(models.Account, { foreignKey: 'userId' });
     User.hasOne(models.Service, { foreignKey: 'ownerId' });
-    User.belongsTo(models.Service, { as: 'viewer', foreignKey: 'serviceId' });
   };
   return User;
 };

@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   Payee.associate = models => {
     Payee.hasMany(models.Transaction, { foreignKey: 'payeeId' });
     Payee.belongsTo(models.Account, { foreignKey: 'transferAccount' });
+    Payee.belongsTo(models.Service, { foreignKey: 'serviceId' });
   };
   return Payee;
 };

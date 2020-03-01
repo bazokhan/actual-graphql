@@ -1,4 +1,5 @@
 module.exports = {
+  service: async category => category.getService(),
   group: async category => category.getGroup({ where: { tombstone: 0 } }),
   transactions: async category =>
     category.getTransactions({ where: { tombstone: 0 } }),

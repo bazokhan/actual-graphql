@@ -14,11 +14,11 @@ module.exports = {
         type: Sequelize.STRING
       },
       amountDue: {
-        allowNull: true,
+        allowNull: false,
         type: Sequelize.FLOAT
       },
       dateDue: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.INTEGER
       },
       tombstone: {

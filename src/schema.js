@@ -27,7 +27,6 @@ const User = gql`
     role: UserRoles
     email: String!
     password: String!
-    accounts: [Account!]!
     ${addFragment(sharedTypeFragment)}
   }
 
@@ -42,7 +41,6 @@ const Account = gql`
   type Account {
     id: ID!
     name: String!
-    user: User!
     transactions: [Transaction!]!
     count: Int
     balance: Float
@@ -201,7 +199,6 @@ const Service = gql`
   type Service {
     id: ID!
     owner: User!
-    members: [User]
     accounts: [Account]
     payees: [Payee]
     groups: [Group]
