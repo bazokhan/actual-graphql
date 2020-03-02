@@ -195,10 +195,17 @@ const ModelCard = React.forwardRef(
                         <span
                           style={{
                             ...iconStyle(colors.pointer),
-                            margin: '0 5px'
+                            margin: '0 5px',
+                            width: 'auto',
+                            borderRadius: '30px',
+                            display: 'flex',
+                            fontSize: '10px',
+                            fontWeight: '100',
+                            alignItems: 'center',
+                            padding: '0 10px'
                           }}
                         >
-                          :
+                          &gt;-
                         </span>
                         {toModel}
                       </h3>
@@ -209,7 +216,45 @@ const ModelCard = React.forwardRef(
                   // )
                 }
               })}
-          {/* {open && model.associates && model.associates.map(() => {})} */}
+          {open &&
+            model.associates &&
+            model.associates
+              .filter(model => model.through)
+              .sort((a, b) => {
+                return a.through && a.through.localeCompare(b.through);
+              })
+              .map(item => {
+                const { toModel, through } = item;
+                return (
+                  <div key={through} style={cardStyles(colors.pointer)}>
+                    <h3
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      {through}
+                      <span
+                        style={{
+                          ...iconStyle(colors.relation),
+                          margin: '0 5px',
+                          width: 'auto',
+                          borderRadius: '30px',
+                          display: 'flex',
+                          fontSize: '10px',
+                          fontWeight: '100',
+                          alignItems: 'center',
+                          padding: '0 10px'
+                        }}
+                      >
+                        &gt;&lt;
+                      </span>
+                      {toModel}
+                    </h3>
+                  </div>
+                );
+              })}
         </div>
         <div style={columnStyle}>
           {open &&
@@ -310,6 +355,26 @@ const App = () => {
                 ))}
           </div>
         ))}
+      {migrations &&
+        migrations
+          .filter(
+            migration =>
+              !models
+                .map(model => model.modelName)
+                .includes(
+                  migration.modelName.replace(/ies$/, 'y').replace(/s$/, '')
+                )
+          )
+          .map(migration => (
+            <ModelCard
+              key={migration.modelName}
+              model={{}}
+              openAll={openAll}
+              hideSystemFields={hideSystemFields}
+              migration={migration}
+              ref={null}
+            />
+          ))}
       {/* {models &&
         models
           .sort((a, b) => levels[a.modelName] - levels[b.modelName])

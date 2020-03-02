@@ -1,20 +1,6 @@
 const { gql } = require('apollo-server');
 const { print: addSchema } = require('graphql/language/printer');
 
-const sharedTypeFragment = [
-  `deleted: Boolean!`,
-  `createdAt: String!`,
-  `updatedAt: String!`,
-  `service: Service!`
-];
-
-const addFragment = fragment => `
-    ${fragment[0]}
-    ${fragment[1]}
-    ${fragment[2]}
-    ${fragment[3]}
-`;
-
 const User = gql`
   enum UserRoles {
     SUPERADMIN
@@ -27,7 +13,10 @@ const User = gql`
     role: UserRoles
     email: String!
     password: String!
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateUserInput {
@@ -44,7 +33,10 @@ const Account = gql`
     transactions: [Transaction!]!
     count: Int
     balance: Float
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateAccountInput {
@@ -61,7 +53,10 @@ const Payee = gql`
     transactions: [Transaction!]!
     count: Int
     balance: Float
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreatePayeeInput {
@@ -80,7 +75,10 @@ const Group = gql`
     categories: [Category!]!
     count: Int
     balance: Float
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateGroupInput {
@@ -99,7 +97,10 @@ const Category = gql`
     transactions: [Transaction!]!
     count: Int
     balance: Float
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateCategoryInput {
@@ -124,7 +125,10 @@ const Transaction = gql`
     account: Account!
     category: Category!
     payee: Payee!
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateTransactionInput {
@@ -170,7 +174,10 @@ const Invoice = gql`
     dateDue: String
     transactions: [Transaction]
     products: [Product]
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateInvoiceInput {
@@ -186,7 +193,10 @@ const Product = gql`
     id: ID!
     name: String!
     invoices: [Invoice]
-    ${addFragment(sharedTypeFragment)}
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+    service: Service!
   }
 
   input CreateProductInput {
