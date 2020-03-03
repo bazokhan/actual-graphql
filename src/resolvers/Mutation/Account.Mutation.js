@@ -1,4 +1,4 @@
-const { create } = require('./middlewares');
+const { create, migrate } = require('./middlewares');
 
 module.exports = {
   createAccount: async (root, { account: { name } }, context) => {
@@ -27,10 +27,24 @@ module.exports = {
   migrateAccount: async (
     root,
     { account: { id, name, tombstone } },
-    { models, author }
+    context
   ) => {
-    if (!author || !author.id) return new Error('No author found!');
-    models.Account.create({ id, name, tombstone });
+    try {
+      const createdAccount = await migrate(
+        'Account',
+        { id, name, tombstone },
+        context
+      );
+      await create(
+        'Payee',
+        { name, transferAccount: createdAccount.id },
+        context
+      );
+      return createdAccount;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   },
 
   deleteAccount: async (root, { id }, { models }) => {

@@ -50,6 +50,37 @@ const Account = gql`
   }
 `;
 
+const Category = gql`
+  type Category {
+    id: ID!
+    name: String!
+    isIncome: Boolean!
+    transactions: [Transaction!]!
+    count: Int
+    balance: Float
+    deleted: Boolean!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  input CreateCategoryInput {
+    name: String!
+    groupId: ID!
+  }
+
+  input MigrateCategoryInput {
+    id: ID!
+    name: String!
+    groupId: ID!
+    tombstone: Int
+  }
+
+  input UpdateCategoryInput {
+    name: String
+    groupId: ID
+  }
+`;
+
 const Payee = gql`
   type Payee {
     id: ID!
@@ -69,9 +100,9 @@ const Payee = gql`
   }
 
   input MigratePayeeInput {
+    id: ID!
     name: String!
     accountId: ID
-    accountName: String
     tombstone: Int
   }
 `;
@@ -102,37 +133,6 @@ const Group = gql`
   }
 `;
 
-const Category = gql`
-  type Category {
-    id: ID!
-    name: String!
-    isIncome: Boolean!
-    transactions: [Transaction!]!
-    count: Int
-    balance: Float
-    deleted: Boolean!
-    createdAt: String!
-    updatedAt: String!
-  }
-
-  input CreateCategoryInput {
-    name: String!
-    groupId: ID!
-  }
-
-  input MigrateCategoryInput {
-    name: String!
-    groupId: ID
-    groupName: String
-    tombstone: Int
-  }
-
-  input UpdateCategoryInput {
-    name: String
-    groupId: ID
-  }
-`;
-
 const Transaction = gql`
   type Transaction {
     id: ID!
@@ -151,7 +151,6 @@ const Transaction = gql`
     accountId: ID
     categoryId: ID
     payeeId: ID
-    deleted: Boolean
   }
 
   input UpdateTransactionInput {
@@ -172,10 +171,6 @@ const Transaction = gql`
     accountId: ID
     categoryId: ID
     payeeId: ID
-    accountName: String
-    categoryName: String
-    groupName: String
-    payeeName: String
     tombstone: Int
   }
 `;
@@ -265,38 +260,32 @@ const typeDefs = gql`
 
   type Mutation {
     login(credentials: LoginInput!): Token
-    createUser(user: CreateUserInput!): User!
+    createUser(user: CreateUserInput!): User
 
     createAccount(account: CreateAccountInput!): Account
-    migrateAccount(account: MigrateTransactionInput): Account!
+    migrateAccount(account: MigrateTransactionInput): Account
     deleteAccount(id: ID!): Account
 
     createCategory(category: CreateCategoryInput!): Category
-    updateCategory(id: ID!, category: UpdateCategoryInput): Category!
-    createCategories(categories: [CreateCategoryInput!]!): [Category!]
+    migrateCategory(category: MigrateCategoryInput!): Category
+    updateCategory(id: ID!, category: UpdateCategoryInput): Category
     deleteCategory(id: ID!): Category
 
     createGroup(group: CreateGroupInput!): Group
-    createGroups(groups: [CreateGroupInput!]!): [Group!]
+    migrateGroup(group: MigrateGroupInput!): Group
     deleteGroup(id: ID!): Group
 
     createInvoice(invoice: CreateInvoiceInput): Invoice
 
     createPayee(payee: CreatePayeeInput!): Payee
-    createPayees(payees: [CreatePayeeInput!]!): [Payee!]
+    migratePayee(Payee: MigratePayeeInput!): Payee
     deletePayee(id: ID!): Payee
 
     createProduct(product: CreateProductInput): Product
 
     createTransaction(transaction: CreateTransactionInput!): Transaction
-    updateTransaction(
-      id: ID!
-      transaction: UpdateTransactionInput
-    ): Transaction!
-    createTransactions(transactions: [CreateTransactionInput!]!): [Transaction]!
-    migrateTransactions(
-      transactions: [MigrateTransactionInput!]!
-    ): [Transaction]!
+    migrateTransaction(transaction: MigrateTransactionInput!): Transaction
+    updateTransaction(id: ID!, transaction: UpdateTransactionInput): Transaction
     deleteTransaction(id: ID!): Transaction
   }
 `;

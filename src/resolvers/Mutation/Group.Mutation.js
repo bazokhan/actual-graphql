@@ -1,5 +1,4 @@
-const uuidv1 = require('uuid/v1');
-const { create } = require('./middlewares');
+const { create, migrate } = require('./middlewares');
 
 module.exports = {
   createGroup: async (root, { group: { isIncome, name } }, context) => {
@@ -18,27 +17,21 @@ module.exports = {
   },
 
   // For migration purpose only
-  createGroups: async (root, { groups }, { models }) => {
-    return groups.reduce(async (prev, { isIncome, name, tombstone }) => {
-      prev = await prev;
-      const createdGroup = isIncome
-        ? await models.Group.create({
-            id: uuidv1(),
-            isIncome: 1,
-            name,
-            tombstone
-          })
-        : await models.Group.create({
-            id: uuidv1(),
-            isIncome: 0,
-            name,
-            tombstone
-          });
-      if (createdGroup) {
-        prev.push(createdGroup);
-      }
-      return prev;
-    }, []);
+  migrateGroup: async (
+    root,
+    { group: { id, isIncome, name, tombstone } },
+    context
+  ) => {
+    try {
+      return migrate(
+        'Group',
+        { id, name, isIncome: Number(isIncome), tombstone },
+        context
+      );
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   },
 
   deleteGroup: async (root, { id }, { models }) => {

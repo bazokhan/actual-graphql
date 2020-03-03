@@ -1,5 +1,4 @@
-const uuidv1 = require('uuid/v1');
-const { create } = require('./middlewares');
+const { create, migrate } = require('./middlewares');
 
 module.exports = {
   createCategory: async (root, { category: { groupId, name } }, context) => {
@@ -31,6 +30,32 @@ module.exports = {
     }
   },
 
+  // For migration purpose only
+  migrateCategory: async (
+    root,
+    { category: { id, groupId, name, tombstone } },
+    context
+  ) => {
+    try {
+      const { author } = context;
+      const service = await author.getService();
+      const groups = await service.getGroups({
+        where: { id: groupId, tombstone: 0 }
+      });
+      if (!groups || !groups.length) return new Error('No Group Found!');
+      const group = groups[0];
+
+      return migrate(
+        'Category',
+        { id, isIncome: group.isIncome || 0, name, groupId, tombstone },
+        context
+      );
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  },
+
   updateCategory: async (root, { id, category }, { models }) => {
     let target;
     try {
@@ -46,44 +71,6 @@ module.exports = {
     return target;
   },
 
-  // For migration purpose only
-  createCategories: async (root, { categories }, { models }) => {
-    return categories.reduce(
-      async (prev, { groupId, groupName, name, tombstone }) => {
-        prev = await prev;
-        let groups;
-        if (groupId) {
-          groups = await models.Group.findAll({
-            where: {
-              id: groupId
-            }
-          });
-        } else if (groupName) {
-          groups = await models.Group.findAll({
-            where: {
-              name: groupName
-            }
-          });
-        }
-        if (!groups || !groups.length) {
-          return new Error("Couldn't find corresponding groups");
-        }
-        const createdCategory = await models.Category.create({
-          id: uuidv1(),
-          isIncome: groups[0].isIncome || 0,
-          name,
-          groupId: groups[0].id,
-          tombstone
-        });
-
-        if (createdCategory) {
-          prev.push(createdCategory);
-        }
-        return prev;
-      },
-      []
-    );
-  },
   deleteCategory: async (root, { id }, { models }) => {
     const targetCategory = await models.Category.findOne({ where: { id } });
     if (!targetCategory) return null;

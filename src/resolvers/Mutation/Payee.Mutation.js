@@ -1,5 +1,4 @@
-const uuidv1 = require('uuid/v1');
-const { create } = require('./middlewares');
+const { create, migrate } = require('./middlewares');
 
 module.exports = {
   createPayee: async (root, { payee: { accountId, name } }, context) => {
@@ -27,50 +26,26 @@ module.exports = {
   },
 
   // For migration purpose only
-  createPayees: async (root, { payees }, { models }) => {
+  migratePayee: async (
+    root,
+    { payee: { id, accountId, name, tombstone } },
+    context
+  ) => {
     try {
-      return payees.reduce(
-        async (prev, { accountId, accountName, name, tombstone }) => {
-          prev = await prev;
-          let accounts;
-          if (accountId) {
-            accounts = await models.Account.findAll({
-              where: {
-                id: accountId
-              }
-            });
-            if (!accounts || !accounts.length) {
-              return new Error("Couldn't find corresponding accounts by id");
-            }
-          } else if (accountName) {
-            accounts = await models.Account.findAll({
-              where: {
-                name: accountName
-              }
-            });
-            if (!accounts || !accounts.length) {
-              return new Error("Couldn't find corresponding accounts by name");
-            }
-          }
-
-          const createdPayee =
-            accounts && accounts.length
-              ? await models.Payee.create({
-                  id: uuidv1(),
-                  transferAccount: accounts[0].id,
-                  name,
-                  tombstone
-                })
-              : await models.Payee.create({ id: uuidv1(), name, tombstone });
-          if (createdPayee) {
-            prev.push(createdPayee);
-          }
-          return prev;
-        },
-        []
+      const { models } = context;
+      if (accountId) {
+        const linkedAccount = await models.Account.findByPk(accountId);
+        if (!linkedAccount)
+          return new Error('No Account Found To Be Linked To This Payee');
+      }
+      return migrate(
+        'Payee',
+        { id, name, transferAccount: accountId || null, tombstone },
+        context
       );
-    } catch (ex) {
-      console.log(ex);
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   },
 

@@ -18,4 +18,20 @@ const create = async (modelName, input, context) => {
   }
 };
 
-module.exports = { create };
+const migrate = async (modelName, input, context) => {
+  try {
+    const { models, author } = context;
+    if (!author || !author.id) return new Error('No author found!');
+    const service = await author.getService();
+    if (!service || !service.id) return new Error('No service found!');
+    return models[modelName].create({
+      ...input,
+      serviceId: service.id
+    });
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
+
+module.exports = { create, migrate };
