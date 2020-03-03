@@ -29,6 +29,9 @@ module.exports = {
     { account: { id, name, tombstone } },
     context
   ) => {
+    const { models } = context;
+    const alreadyExists = await models.Account.findByPk(id);
+    if (alreadyExists) return new Error('Already existing!');
     try {
       const createdAccount = await migrate(
         'Account',

@@ -33,6 +33,8 @@ module.exports = {
   ) => {
     try {
       const { models } = context;
+      const alreadyExists = await models.Payee.findByPk(id);
+      if (alreadyExists) return new Error('Already existing!');
       if (accountId) {
         const linkedAccount = await models.Account.findByPk(accountId);
         if (!linkedAccount)

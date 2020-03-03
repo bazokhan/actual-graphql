@@ -37,7 +37,9 @@ module.exports = {
     context
   ) => {
     try {
-      const { author } = context;
+      const { author, models } = context;
+      const alreadyExists = await models.Category.findByPk(id);
+      if (alreadyExists) return new Error('Already existing!');
       const service = await author.getService();
       const groups = await service.getGroups({
         where: { id: groupId, tombstone: 0 }

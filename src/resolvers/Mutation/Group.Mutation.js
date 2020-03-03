@@ -22,6 +22,9 @@ module.exports = {
     { group: { id, isIncome, name, tombstone } },
     context
   ) => {
+    const { models } = context;
+    const alreadyExists = await models.Group.findByPk(id);
+    if (alreadyExists) return new Error('Already existing!');
     try {
       return migrate(
         'Group',
