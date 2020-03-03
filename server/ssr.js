@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const getModels = require('./map-models');
 const getMigrations = require('./map-migrations');
+const getTypes = require('./map-schema');
 const transpile = require('./transpile-file');
 const util = require('util');
 
@@ -18,6 +19,7 @@ const modifiedTimes = {};
 const autoTranspile = cron.schedule('*/5 * * * * *', async () => {
   await getModels(modelsPath);
   await getMigrations(migrationsPath);
+  await getTypes();
   const srcFiles = fs.readdirSync(path.resolve(__dirname, './src'));
   await srcFiles.reduce(async (prev, fileName) => {
     try {

@@ -1,7 +1,17 @@
 import models from './models.map.js';
 import migrations from './migrations.map.js';
+import schemaTypes from './schema.map.js';
 
-const systemFields = ['id', 'createdAt', 'updatedAt'];
+const systemFields = ['id', 'createdAt', 'updatedAt', 'tombstone', 'deleted'];
+
+const typeNames = schemaTypes
+  .map(type => {
+    const singular = type.name.toLowerCase();
+    const plueral = `${type.name.toLowerCase()}s`.replace(/ys$/, 'ies');
+
+    return [singular, plueral];
+  })
+  .flat();
 
 const colors = {
   string: '#1abc9c',
@@ -9,11 +19,14 @@ const colors = {
   float: '#d35400',
   any: '#3498db',
   none: '#bdc3c7',
-  relation: '#2980b9',
+  relation: '#7f8c8d',
+  relation2: '#2980b9',
   pointer: '#34495e',
   background: '#ecf0f1',
   error: '#c0392b',
-  info: '#2c3e50'
+  info: '#2c3e50',
+  boolean: '#8e44ad',
+  id: '#2ecc71'
 };
 
 const appStyles = {
@@ -37,7 +50,7 @@ const titleStyle = {
 };
 
 const columnStyle = {
-  width: '50%',
+  width: '33%',
   overflow: 'hidden'
 };
 
@@ -109,7 +122,18 @@ const calculateLevel = models => {
 };
 
 const ModelCard = React.forwardRef(
-  ({ openAll, model, migration, hideSystemFields, level }, ref) => {
+  (
+    {
+      openAll,
+      model,
+      migration,
+      hideSystemFields,
+      schemaType,
+      level,
+      hideRelationFields
+    },
+    ref
+  ) => {
     const [open, setOpen] = React.useState(openAll);
     React.useEffect(() => {
       setOpen(openAll);
@@ -135,7 +159,8 @@ const ModelCard = React.forwardRef(
             {open ? '-' : '+'}
           </button>
           <h2 style={titleStyle}>
-            {model.modelName}:{migration.modelName}
+            {model.modelName}:{migration.modelName}:
+            {schemaType && schemaType.name}
           </h2>
         </div>
         <div style={columnStyle}>
@@ -161,7 +186,12 @@ const ModelCard = React.forwardRef(
                   const allowNull = properties.find(
                     property => property.propertyName === 'allowNull'
                   );
-                  const color = type
+                  const unique = properties.find(
+                    property => property.propertyName === 'unique'
+                  );
+                  const color = systemFields.includes(fieldName)
+                    ? colors.error
+                    : type
                     ? type.value === 'DataTypes.STRING'
                       ? colors.string
                       : type.value === 'DataTypes.INTEGER'
@@ -170,11 +200,15 @@ const ModelCard = React.forwardRef(
                       ? colors.float
                       : colors.any
                     : colors.none;
-                  return (
+                  return hideSystemFields &&
+                    systemFields.includes(fieldName) ? null : (
                     <div key={fieldName} style={cardStyles(color)}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         {allowNull && allowNull.value === 'false' && (
                           <span style={iconStyle(colors.error)}>!</span>
+                        )}
+                        {unique && unique.value === 'true' && (
+                          <span style={iconStyle(colors.info)}>1</span>
                         )}
                         <h3>{fieldName}</h3>
                       </div>
@@ -183,33 +217,36 @@ const ModelCard = React.forwardRef(
                 } else {
                   const { type, toModel, foreignKey } = item;
                   return type === 'belongsTo' ? (
-                    <div key={foreignKey} style={cardStyles(colors.relation)}>
-                      <h3
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
-                        }}
-                      >
-                        {foreignKey}
-                        <span
+                    hideSystemFields &&
+                    systemFields.includes(foreignKey) ? null : (
+                      <div key={foreignKey} style={cardStyles(colors.relation)}>
+                        <h3
                           style={{
-                            ...iconStyle(colors.pointer),
-                            margin: '0 5px',
-                            width: 'auto',
-                            borderRadius: '30px',
                             display: 'flex',
-                            fontSize: '10px',
-                            fontWeight: '100',
-                            alignItems: 'center',
-                            padding: '0 10px'
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                           }}
                         >
-                          &gt;-
-                        </span>
-                        {toModel}
-                      </h3>
-                    </div>
+                          {foreignKey}
+                          <span
+                            style={{
+                              ...iconStyle(colors.pointer),
+                              margin: '0 5px',
+                              width: 'auto',
+                              borderRadius: '30px',
+                              display: 'flex',
+                              fontSize: '10px',
+                              fontWeight: '100',
+                              alignItems: 'center',
+                              padding: '0 10px'
+                            }}
+                          >
+                            &gt;-
+                          </span>
+                          {toModel}
+                        </h3>
+                      </div>
+                    )
                   ) : null;
                   // (
                   //   <div key={foreignKey || through}>{toModel}</div>
@@ -225,7 +262,8 @@ const ModelCard = React.forwardRef(
               })
               .map(item => {
                 const { toModel, through } = item;
-                return (
+                return hideSystemFields &&
+                  systemFields.includes(through) ? null : (
                   <div key={through} style={cardStyles(colors.pointer)}>
                     <h3
                       style={{
@@ -268,6 +306,9 @@ const ModelCard = React.forwardRef(
                 const allowNull = properties.find(
                   property => property.propertyName === 'allowNull'
                 );
+                const unique = properties.find(
+                  property => property.propertyName === 'unique'
+                );
                 const color = systemFields.includes(fieldName)
                   ? colors.error
                   : type
@@ -286,7 +327,47 @@ const ModelCard = React.forwardRef(
                       {allowNull && allowNull.value === 'false' && (
                         <span style={iconStyle(colors.error)}>!</span>
                       )}
+                      {unique && unique.value === 'true' && (
+                        <span style={iconStyle(colors.info)}>1</span>
+                      )}
                       <h3>{fieldName}</h3>
+                    </div>
+                  </div>
+                );
+              })}
+        </div>
+        <div style={columnStyle}>
+          {open &&
+            schemaType &&
+            schemaType.fields &&
+            schemaType.fields
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(({ name, is }) => {
+                const color = systemFields.includes(name)
+                  ? colors.error
+                  : is && is.is
+                  ? typeNames.includes(name)
+                    ? colors.relation
+                    : is.is === 'String'
+                    ? colors.string
+                    : is.is === 'Int'
+                    ? colors.integer
+                    : is.is === 'Float'
+                    ? colors.float
+                    : is.is === 'Boolean'
+                    ? colors.boolean
+                    : is.is === 'ID'
+                    ? colors.id
+                    : colors.any
+                  : colors.none;
+                return (hideSystemFields && systemFields.includes(name)) ||
+                  (hideRelationFields && typeNames.includes(name)) ? null : (
+                  <div key={name} style={cardStyles(color)}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {is && is.required && (
+                        <span style={iconStyle(colors.error)}>!</span>
+                      )}
+                      <h3>{name}</h3>
                     </div>
                   </div>
                 );
@@ -301,6 +382,7 @@ const App = () => {
   const [refs, setRefs] = React.useState({});
   const [openAll, setOpenAll] = React.useState(false);
   const [hideSystemFields, setHideSystemFields] = React.useState(false);
+  const [hideRelationFields, setHideRelationFields] = React.useState(false);
   const levels = React.useMemo(() => calculateLevel(models), [models]);
   React.useEffect(() => {
     if (models) {
@@ -320,6 +402,12 @@ const App = () => {
         onClick={() => setHideSystemFields(!hideSystemFields)}
       >
         {hideSystemFields ? 'Show System Fields' : 'Hide System Fields'}
+      </button>
+      <button
+        type="button"
+        onClick={() => setHideRelationFields(!hideRelationFields)}
+      >
+        {hideRelationFields ? 'Show Relation Fields' : 'Hide Relation Fields'}
       </button>
       {Object.values(levels)
         .filter((level, index, arr) => arr.indexOf(level) === index)
@@ -341,6 +429,7 @@ const App = () => {
                     model={model}
                     openAll={openAll}
                     hideSystemFields={hideSystemFields}
+                    hideRelationFields={hideRelationFields}
                     migration={
                       migrations.find(
                         migration =>
@@ -349,6 +438,9 @@ const App = () => {
                             .replace(/s$/, '') === model.modelName
                       ) || null
                     }
+                    schemaType={schemaTypes.find(
+                      type => type.name === model.modelName
+                    )}
                     level={levels[model.modelName]}
                     ref={refs[model.modelName]}
                   />

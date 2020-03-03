@@ -1,5 +1,5 @@
 module.exports = {
-  service: async group => group.getService(),
+  // service: async group => group.getService(),
   categories: async group => group.getCategories({ where: { tombstone: 0 } }),
   deleted: async group => Boolean(group.tombstone),
   count: async group => {

@@ -1,14 +1,31 @@
 const uuidv1 = require('uuid/v1');
+const { create } = require('./middlewares');
+
 module.exports = {
-  createPayee: async (root, { payee: { accountId, name } }, { models }) =>
-    accountId
-      ? models.Payee.create({
-          id: uuidv1(),
-          transferAccount: accountId,
-          name,
-          tombstone: 0
-        })
-      : models.Payee.create({ id: uuidv1(), name, tombstone: 0 }),
+  createPayee: async (root, { payee: { accountId, name } }, context) => {
+    try {
+      const { author, models } = context;
+      if (accountId) {
+        const linkedAccount = await models.Account.findByPk(accountId);
+        if (!linkedAccount)
+          return new Error('No Account Found To Be Linked To This Payee');
+      }
+      const service = await author.getService();
+      const payees = await service.getPayees({ where: { tombstone: 0 } });
+      if (payees && payees.map(payee => payee.name).includes(name)) {
+        return new Error('Already has a payee with this name');
+      }
+      return create(
+        'Payee',
+        { name, transferAccount: accountId || null },
+        context
+      );
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  },
+
   // For migration purpose only
   createPayees: async (root, { payees }, { models }) => {
     try {
@@ -56,6 +73,7 @@ module.exports = {
       console.log(ex);
     }
   },
+
   deletePayee: async (root, { id }, { models }) => {
     const targetPayee = await models.Payee.findOne({ where: { id } });
     if (!targetPayee) return null;

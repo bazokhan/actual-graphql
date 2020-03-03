@@ -10,7 +10,7 @@ const User = gql`
   type User {
     id: ID!
     name: String!
-    role: UserRoles
+    role: UserRoles!
     email: String!
     password: String!
     deleted: Boolean!
@@ -36,10 +36,14 @@ const Account = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateAccountInput {
+    name: String!
+  }
+
+  input MigrateAccountInput {
+    id: ID!
     name: String!
     tombstone: Int
   }
@@ -56,7 +60,6 @@ const Payee = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreatePayeeInput {
@@ -78,10 +81,15 @@ const Group = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateGroupInput {
+    name: String!
+    isIncome: Boolean!
+  }
+
+  input MigrateGroupInput {
+    id: ID!
     name: String!
     isIncome: Boolean!
     tombstone: Int
@@ -93,17 +101,20 @@ const Category = gql`
     id: ID!
     name: String!
     isIncome: Boolean!
-    group: Group!
     transactions: [Transaction!]!
     count: Int
     balance: Float
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateCategoryInput {
+    name: String!
+    groupId: ID!
+  }
+
+  input MigrateCategoryInput {
     name: String!
     groupId: ID
     groupName: String
@@ -122,13 +133,9 @@ const Transaction = gql`
     amount: Float!
     notes: String
     date: String!
-    account: Account!
-    category: Category!
-    payee: Payee!
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateTransactionInput {
@@ -177,7 +184,6 @@ const Invoice = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateInvoiceInput {
@@ -196,7 +202,6 @@ const Product = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
-    service: Service!
   }
 
   input CreateProductInput {
@@ -217,6 +222,7 @@ const Service = gql`
     invoices: [Invoice]
     products: [Product]
     createdAt: String!
+    updatedAt: String!
   }
 `;
 
@@ -243,59 +249,50 @@ const typeDefs = gql`
     services: [Service!]!
     users(includeDeleted: Boolean, onlyDeleted: Boolean): [User!]!
     accounts(includeDeleted: Boolean, onlyDeleted: Boolean): [Account!]!
-    payees(includeDeleted: Boolean, onlyDeleted: Boolean): [Payee!]!
-    groups(includeDeleted: Boolean, onlyDeleted: Boolean): [Group!]!
     categories(includeDeleted: Boolean, onlyDeleted: Boolean): [Category!]!
-    transactions(includeDeleted: Boolean, onlyDeleted: Boolean): [Transaction!]!
+    groups(includeDeleted: Boolean, onlyDeleted: Boolean): [Group!]!
     invoices(includeDeleted: Boolean, onlyDeleted: Boolean): [Invoice!]!
+    payees(includeDeleted: Boolean, onlyDeleted: Boolean): [Payee!]!
     products(includeDeleted: Boolean, onlyDeleted: Boolean): [Product!]!
+    transactions(includeDeleted: Boolean, onlyDeleted: Boolean): [Transaction!]!
   }
 
   type Mutation {
     login(credentials: LoginInput!): Token
     createUser(user: CreateUserInput!): User!
-    createAccount(account: CreateAccountInput!): Account!
-    createPayee(payee: CreatePayeeInput!): Payee!
-    createGroup(group: CreateGroupInput!): Group!
-    createCategory(category: CreateCategoryInput!): Category!
-    createTransaction(transaction: CreateTransactionInput!): Transaction!
+
+    createAccount(account: CreateAccountInput!): Account
+    migrateAccount(account: MigrateTransactionInput): Account!
+    deleteAccount(id: ID!): Account
+
+    createCategory(category: CreateCategoryInput!): Category
+    updateCategory(id: ID!, category: UpdateCategoryInput): Category!
+    createCategories(categories: [CreateCategoryInput!]!): [Category!]
+    deleteCategory(id: ID!): Category
+
+    createGroup(group: CreateGroupInput!): Group
+    createGroups(groups: [CreateGroupInput!]!): [Group!]
+    deleteGroup(id: ID!): Group
+
+    createInvoice(invoice: CreateInvoiceInput): Invoice
+
+    createPayee(payee: CreatePayeeInput!): Payee
+    createPayees(payees: [CreatePayeeInput!]!): [Payee!]
+    deletePayee(id: ID!): Payee
+
+    createProduct(product: CreateProductInput): Product
+
+    createTransaction(transaction: CreateTransactionInput!): Transaction
     updateTransaction(
       id: ID!
       transaction: UpdateTransactionInput
     ): Transaction!
-    createInvoice(invoice: CreateInvoiceInput): Invoice!
-    createProduct(product: CreateProductInput): Product!
-    createAccounts(accounts: [CreateAccountInput!]!): [Account!]
-    createPayees(payees: [CreatePayeeInput!]!): [Payee!]
-    createGroups(groups: [CreateGroupInput!]!): [Group!]
-    createCategories(categories: [CreateCategoryInput!]!): [Category!]
     createTransactions(transactions: [CreateTransactionInput!]!): [Transaction]!
     migrateTransactions(
       transactions: [MigrateTransactionInput!]!
     ): [Transaction]!
-    deleteAccount(id: ID!): Account
-    deleteCategory(id: ID!): Category
-    deleteGroup(id: ID!): Group
-    deletePayee(id: ID!): Payee
     deleteTransaction(id: ID!): Transaction
-    updateCategory(id: ID!, category: UpdateCategoryInput): Category!
   }
 `;
-
-// console.log(
-//   typeDefs.definitions.find(def => def.name && def.name.value === 'User').fields
-// );
-
-// console.log(
-//   typeDefs.definitions.map(({ kind, name: { value }, description }) =>
-//     description && description.value
-//       ? {
-//           name: value,
-//           kind: kind.replace('TypeDefinition', ''),
-//           description: description.value
-//         }
-//       : { name: value, kind: kind.replace('TypeDefinition', '') }
-//   )
-// );
 
 module.exports = typeDefs;

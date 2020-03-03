@@ -96,14 +96,24 @@ const getModels = async modelsPath => {
     }
   }, []);
   try {
-    fs.writeFileSync(
-      path.resolve(__dirname, './src', 'models.map.js'),
-      'export default '
-    );
-    fs.appendFileSync(
-      path.resolve(__dirname, './src', 'models.map.js'),
-      JSON.stringify(models)
-    );
+    const writableFilePath = path.resolve(__dirname, './src', 'models.map.js');
+    try {
+      const oldData = await readFile(
+        path.resolve(__dirname, './src', writableFilePath)
+      );
+      if (oldData) {
+        if (
+          oldData.toString().length ===
+          ('export default ' + JSON.stringify(models)).length
+        ) {
+          return;
+        }
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
+    fs.writeFileSync(writableFilePath, 'export default ');
+    fs.appendFileSync(writableFilePath, JSON.stringify(models));
   } catch (err) {
     console.log(err);
   }

@@ -1,16 +1,36 @@
 const uuidv1 = require('uuid/v1');
+const { create } = require('./middlewares');
 
 module.exports = {
-  createCategory: async (root, { category: { groupId, name } }, { models }) => {
-    const group = await models.Group.findByPk(groupId);
-    return models.Category.create({
-      id: uuidv1(),
-      isIncome: group.isIncome || 0,
-      name,
-      groupId,
-      tombstone: 0
-    });
+  createCategory: async (root, { category: { groupId, name } }, context) => {
+    try {
+      const { author } = context;
+      const service = await author.getService();
+      const categories = await service.getCategories({
+        where: { groupId, tombstone: 0 }
+      });
+      const groups = await service.getGroups({
+        where: { id: groupId, tombstone: 0 }
+      });
+      if (!groups || !groups.length) return new Error('No Group Found!');
+      const group = groups[0];
+      if (
+        categories &&
+        categories.map(category => category.name).includes(name)
+      ) {
+        return new Error('Already has a category with this name');
+      }
+      return create(
+        'Category',
+        { isIncome: group.isIncome || 0, name, groupId },
+        context
+      );
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   },
+
   updateCategory: async (root, { id, category }, { models }) => {
     let target;
     try {
@@ -25,6 +45,7 @@ module.exports = {
     }
     return target;
   },
+
   // For migration purpose only
   createCategories: async (root, { categories }, { models }) => {
     return categories.reduce(

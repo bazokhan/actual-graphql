@@ -1,5 +1,5 @@
 module.exports = {
-  service: async payee => payee.getService(),
+  // service: async payee => payee.getService(),
   account: async payee => {
     const transferAccount = await payee.getAccount();
     return transferAccount

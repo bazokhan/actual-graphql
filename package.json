@@ -6,7 +6,7 @@
   "dependencies": {
     "apollo-server": "^2.9.15",
     "bcryptjs": "^2.4.3",
-    "graphql": "^14.5.8",
+    "graphql": "^14.6.0",
     "jsonwebtoken": "^8.5.1",
     "sequelize": "^5.21.3",
     "sequelize-cli": "^5.5.1",
@@ -20,6 +20,7 @@
     "unseed": "sequelize db:seed:undo:all",
     "unseed-delete": "sequelize db:seed:undo:all && sequelize db:migrate:undo:all",
     "delete": "sequelize db:migrate:undo:all",
+    "restart": "yarn delete && yarn migrate && yarn seed",
     "generate-migration": "sequelize migration:generate",
     "generate-seed": "sequelize seed:generate",
     "lint": "eslint src",

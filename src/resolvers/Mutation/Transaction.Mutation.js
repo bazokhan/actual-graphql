@@ -1,23 +1,49 @@
 const uuidv1 = require('uuid/v1');
 const Op = require('sequelize').Op;
 const { numerizeDate } = require('./helpers');
+const { create } = require('./middlewares');
 
 module.exports = {
   createTransaction: async (
     root,
     { transaction: { amount, notes, date, accountId, categoryId, payeeId } },
-    { models }
-  ) =>
-    models.Transaction.create({
-      id: uuidv1(),
-      amount,
-      notes,
-      date: numerizeDate(date),
-      accountId,
-      categoryId,
-      payeeId,
-      tombstone: 0
-    }),
+    context
+  ) => {
+    try {
+      const { author } = context;
+      const service = await author.getService();
+      const account = (
+        await service.getAccounts({
+          where: { id: accountId }
+        })
+      )[0];
+      if (!account) return new Error('No Account Found!');
+      const category = (
+        await service.getCategories({
+          where: { id: categoryId }
+        })
+      )[0];
+      if (!category) return new Error('No Category Found!');
+      const payee = (await service.getPayees({ where: { id: payeeId } }))[0];
+      if (!payee) return new Error('No Payee Found!');
+      return create(
+        'Transaction',
+        {
+          amount,
+          notes,
+          date: numerizeDate(date),
+          accountId: account.id,
+          categoryId: category.id,
+          payeeId: payee.id
+        },
+        context
+      );
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  },
+
   updateTransaction: async (root, { id, transaction }, { models }) => {
     let target;
     try {
@@ -32,6 +58,7 @@ module.exports = {
     }
     return target;
   },
+
   deleteTransaction: async (root, { id }, { models }) => {
     let target;
     try {
@@ -42,6 +69,7 @@ module.exports = {
     }
     return target;
   },
+
   createTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(
       async (
@@ -131,6 +159,7 @@ module.exports = {
       []
     );
   },
+
   // For migration purpose only
   migrateTransactions: async (root, { transactions }, { models }) => {
     return transactions.reduce(

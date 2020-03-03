@@ -1,25 +1,38 @@
-const uuidv1 = require('uuid/v1');
+const { create } = require('./middlewares');
 
 module.exports = {
-  createAccount: async (root, { account: { userId, name } }, { models }) =>
-    models.Account.create({ id: uuidv1(), userId, name, tombstone: 0 }),
-  // For migration purpose only
-  createAccounts: async (root, { accounts }, { models, author }) => {
-    if (!author || !author.id) return new Error('No author found!');
-    return accounts.reduce(async (prev, { name, tombstone }) => {
-      prev = await prev;
-      const createdAccount = await models.Account.create({
-        id: uuidv1(),
-        userId: author.id,
-        name,
-        tombstone
-      });
-      if (createdAccount) {
-        prev.push(createdAccount);
+  createAccount: async (root, { account: { name } }, context) => {
+    try {
+      const { author } = context;
+      const service = await author.getService();
+      const accounts = await service.getAccounts({ where: { tombstone: 0 } });
+      if (accounts && accounts.map(account => account.name).includes(name)) {
+        return new Error('Already has an account with this name');
       }
-      return prev;
-    }, []);
+
+      const createdAccount = await create('Account', { name }, context);
+      await create(
+        'Payee',
+        { name, transferAccount: createdAccount.id },
+        context
+      );
+      return createdAccount;
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   },
+
+  // For migration purpose only
+  migrateAccount: async (
+    root,
+    { account: { id, name, tombstone } },
+    { models, author }
+  ) => {
+    if (!author || !author.id) return new Error('No author found!');
+    models.Account.create({ id, name, tombstone });
+  },
+
   deleteAccount: async (root, { id }, { models }) => {
     const targetAccount = await models.Account.findOne({ where: { id } });
     if (!targetAccount) return null;
