@@ -182,6 +182,8 @@ const Invoice = gql`
     dateDue: String
     transactions: [Transaction]
     products: [Product]
+    count: Int
+    balance: Float
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!

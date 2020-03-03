@@ -1,3 +1,5 @@
+const { commonResolvers } = require('./Query/middlewares');
+
 module.exports = {
   // service: async transaction => transaction.getService(),
   // account: async transaction =>
@@ -5,5 +7,5 @@ module.exports = {
   // category: async transaction =>
   //   transaction.getCategory({ where: { tombstone: 0 } }),
   // payee: async transaction => transaction.getPayee({ where: { tombstone: 0 } }),
-  deleted: async transaction => Boolean(transaction.tombstone)
+  ...commonResolvers
 };

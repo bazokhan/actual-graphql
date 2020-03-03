@@ -1,18 +1,14 @@
+const {
+  transactionResolvers,
+  commonResolvers
+} = require('./Query/middlewares');
+
 module.exports = {
-  // service: async payee => payee.getService(),
   account: async payee => {
-    const transferAccount = await payee.getAccount();
-    return transferAccount
-      ? await payee.getAccount({ where: { tombstone: 0 } })
-      : null;
+    return payee.getAccount({ where: { tombstone: 0 } });
   },
-  transactions: async payee =>
-    payee.getTransactions({ where: { tombstone: 0 } }),
-  deleted: async payee => Boolean(payee.tombstone),
-  count: async payee => payee.countTransactions({ where: { tombstone: 0 } }),
-  balance: async (payee, _, { models }) => {
-    return models.Transaction.sum('amount', {
-      where: { payeeId: payee.id, tombstone: 0 }
-    });
-  }
+  // user: async account => account.getUser({ where: { tombstone: 0 } }),
+  // service: async account => account.getService(),
+  ...transactionResolvers,
+  ...commonResolvers
 };

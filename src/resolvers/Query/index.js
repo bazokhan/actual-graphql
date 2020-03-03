@@ -1,50 +1,68 @@
+const { authenticate, moderate } = require('./middlewares');
+
 module.exports = {
-  services: async (root, args, { models, author }) => {
-    if (!author || !author.id) return new Error('No author found!');
-    if (author.role !== 'SUPERADMIN')
-      return new Error('You are not authorized');
-    return models.Service.findAll();
+  // Global queries
+  services: async (root, args, context) => {
+    const { models } = context;
+    return moderate(context, async () => models.Service.findAll());
   },
-  users: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.User.findAll()
-      : await models.User.findAll({ where: { tombstone: 0 } });
+  users: async (root, { includeDeleted }, context) => {
+    const { models } = context;
+    return moderate(context, async () =>
+      includeDeleted
+        ? models.User.findAll()
+        : models.User.findAll({ where: { tombstone: 0 } })
+    );
   },
-  // user: async (root, { id }, { models }) => {return await models.User.findById(id).filter(a=>!a.tombstone)},
-  accounts: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Account.findAll()
-      : await models.Account.findAll({ where: { tombstone: 0 } });
+
+  // Service scope queries
+  accounts: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getAccounts()
+        : service.getAccounts({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  // account: async (root, { id }, { models }) => {return await models.Account.findById(id.filter(a=>!a.tombstone)})
-  payees: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Payee.findAll()
-      : await models.Payee.findAll({ where: { tombstone: 0 } });
+  groups: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getGroups()
+        : service.getGroups({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  groups: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Group.findAll()
-      : await models.Group.findAll({ where: { tombstone: 0 } });
+  payees: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getPayees()
+        : service.getPayees({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  categories: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Category.findAll()
-      : await models.Category.findAll({ where: { tombstone: 0 } });
+  categories: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getCategories()
+        : service.getCategories({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  transactions: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Transaction.findAll()
-      : await models.Transaction.findAll({ where: { tombstone: 0 } });
+  transactions: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getTransactions()
+        : service.getTransactions({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  invoices: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Invoice.findAll()
-      : await models.Invoice.findAll({ where: { tombstone: 0 } });
+  invoices: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getInvoices()
+        : service.getInvoices({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   },
-  products: async (root, { includeDeleted }, { models }) => {
-    return includeDeleted
-      ? await models.Product.findAll()
-      : await models.Product.findAll({ where: { tombstone: 0 } });
+  products: async (root, { includeDeleted }, context) => {
+    const queryFunction = async service =>
+      includeDeleted
+        ? service.getProducts()
+        : service.getProducts({ where: { tombstone: 0 } });
+    return authenticate(context, queryFunction);
   }
 };
