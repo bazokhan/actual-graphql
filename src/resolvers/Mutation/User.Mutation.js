@@ -37,7 +37,12 @@ module.exports = {
     }
     return token;
   },
-  createUser: async (root, { user: { name, email, password } }, { models }) => {
+
+  createUser: async (
+    root,
+    { user: { name, role, email, password } },
+    { models }
+  ) => {
     if (!isValidNameLength(name))
       return new Error(
         'Username is not valid. Minimum of 5 characters needed.'
@@ -52,12 +57,14 @@ module.exports = {
     const newUser = await models.User.create({
       id: uuidv1(),
       name,
+      role,
       email,
       tombstone: 0,
       password: await bcrypt.hash(password, 10)
     });
-    newUser.createService({
+    await newUser.createService({
       id: uuidv1()
     });
+    return newUser;
   }
 };

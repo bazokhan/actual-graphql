@@ -14,17 +14,19 @@ module.exports = {
       const service = await author.getService();
       const account = (
         await service.getAccounts({
-          where: { id: accountId }
+          where: { id: accountId, tombstone: 0 }
         })
       )[0];
       if (!account) return new Error('No Account Found!');
       const category = (
         await service.getCategories({
-          where: { id: categoryId }
+          where: { id: categoryId, tombstone: 0 }
         })
       )[0];
       if (!category) return new Error('No Category Found!');
-      const payee = (await service.getPayees({ where: { id: payeeId } }))[0];
+      const payee = (
+        await service.getPayees({ where: { id: payeeId, tombstone: 0 } })
+      )[0];
       if (!payee) return new Error('No Payee Found!');
       return create(
         'Transaction',

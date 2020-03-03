@@ -21,6 +21,7 @@ const User = gql`
 
   input CreateUserInput {
     name: String!
+    role: UserRoles!
     email: String!
     password: String!
   }
@@ -63,6 +64,11 @@ const Payee = gql`
   }
 
   input CreatePayeeInput {
+    name: String!
+    accountId: ID
+  }
+
+  input MigratePayeeInput {
     name: String!
     accountId: ID
     accountName: String

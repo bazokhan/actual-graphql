@@ -7,8 +7,8 @@ const create = async (modelName, input, context) => {
     const service = await author.getService();
     if (!service || !service.id) return new Error('No service found!');
     return models[modelName].create({
-      id: uuid(),
       ...input,
+      id: uuid(),
       tombstone: 0,
       serviceId: service.id
     });
