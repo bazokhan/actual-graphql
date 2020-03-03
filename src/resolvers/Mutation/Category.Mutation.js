@@ -1,4 +1,4 @@
-const { create, migrate } = require('./middlewares');
+const { create, migrate, remove } = require('./middlewares');
 
 module.exports = {
   createCategory: async (root, { category: { groupId, name } }, context) => {
@@ -71,17 +71,24 @@ module.exports = {
     return target;
   },
 
-  deleteCategory: async (root, { id }, { models }) => {
-    const targetCategory = await models.Category.findOne({ where: { id } });
-    if (!targetCategory) return null;
-    const hasTransactions = await targetCategory.countTransactions({
-      where: { tombstone: 0 }
-    });
-    if (hasTransactions) {
-      return new Error("This category has transactions. It can't be deleted.");
-    }
-    return targetCategory.update({
-      tombstone: 1
-    });
+  deleteCategory: async (root, { id }, context) => {
+    const validator = async category => {
+      try {
+        const hasTransactions = await category.countTransactions({
+          where: { tombstone: 0 }
+        });
+        if (hasTransactions) {
+          return new Error(
+            "This category has transactions. It can't be deleted."
+          );
+        }
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+    };
+
+    return remove('Category', id, context, validator);
   }
 };

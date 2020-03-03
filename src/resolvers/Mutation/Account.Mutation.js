@@ -1,4 +1,4 @@
-const { create, migrate } = require('./middlewares');
+const { create, migrate, remove } = require('./middlewares');
 
 module.exports = {
   createAccount: async (root, { account: { name } }, context) => {
@@ -47,16 +47,24 @@ module.exports = {
     }
   },
 
-  deleteAccount: async (root, { id }, { models }) => {
-    const targetAccount = await models.Account.findOne({ where: { id } });
-    if (!targetAccount) return null;
-    const hasTransactions = await targetAccount.countTransactions({
-      where: { tombstone: 0 }
-    });
-    if (hasTransactions)
-      return new Error("This account has transactions. It can't be deleted.");
-    return targetAccount.update({
-      tombstone: 1
-    });
+  deleteAccount: async (root, { id }, context) => {
+    const validator = async account => {
+      try {
+        const hasTransactions = await account.countTransactions({
+          where: { tombstone: 0 }
+        });
+        if (hasTransactions) {
+          return new Error(
+            "This account has transactions. It can't be deleted."
+          );
+        }
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+    };
+
+    return remove('Account', id, context, validator);
   }
 };

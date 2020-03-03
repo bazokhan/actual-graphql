@@ -34,4 +34,25 @@ const migrate = async (modelName, input, context) => {
   }
 };
 
-module.exports = { create, migrate };
+const remove = async (modelName, id, context, validator) => {
+  try {
+    let willDelete = true;
+    const { models } = context;
+    const target = await models[modelName].findByPk(id);
+    if (!target) return new Error(`${modelName} to be deleted was not found!`);
+    if (validator) {
+      willDelete = await validator(target);
+    }
+    if (willDelete === true) {
+      return target.update({
+        tombstone: 1
+      });
+    }
+    return willDelete;
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+};
+
+module.exports = { create, migrate, remove };

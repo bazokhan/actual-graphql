@@ -1,6 +1,6 @@
 // const Op = require('sequelize').Op;
 const { numerizeDate } = require('./helpers');
-const { create, migrate } = require('./middlewares');
+const { create, migrate, remove } = require('./middlewares');
 
 module.exports = {
   createTransaction: async (
@@ -118,14 +118,7 @@ module.exports = {
     return target;
   },
 
-  deleteTransaction: async (root, { id }, { models }) => {
-    let target;
-    try {
-      target = await models.Transaction.findByPk(id);
-      await target.update({ tombstone: 1 });
-    } catch (ex) {
-      console.log(ex);
-    }
-    return target;
+  deleteTransaction: async (root, { id }, context) => {
+    return remove('Transaction', id, context);
   }
 };

@@ -1,4 +1,4 @@
-const { create, migrate } = require('./middlewares');
+const { create, migrate, remove } = require('./middlewares');
 
 module.exports = {
   createPayee: async (root, { payee: { accountId, name } }, context) => {
@@ -49,20 +49,25 @@ module.exports = {
     }
   },
 
-  deletePayee: async (root, { id }, { models }) => {
-    const targetPayee = await models.Payee.findOne({ where: { id } });
-    if (!targetPayee) return null;
-    if (await targetPayee.getAccount({ where: { tombstone: 0 } }))
-      return new Error(
-        'This payee is connected to an account. Please delete the account first'
-      );
-    const hasTransactions = await targetPayee.countTransactions({
-      where: { tombstone: 0 }
-    });
-    if (hasTransactions)
-      return new Error("This payee has transactions. It can't be deleted.");
-    return targetPayee.update({
-      tombstone: 1
-    });
+  deletePayee: async (root, { id }, context) => {
+    const validator = async payee => {
+      try {
+        if (await payee.getAccount({ where: { tombstone: 0 } }))
+          return new Error(
+            'This payee is connected to an account. Please delete the account first'
+          );
+        const hasTransactions = await payee.countTransactions({
+          where: { tombstone: 0 }
+        });
+        if (hasTransactions)
+          return new Error("This payee has transactions. It can't be deleted.");
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+    };
+
+    return remove('Payee', id, context, validator);
   }
 };

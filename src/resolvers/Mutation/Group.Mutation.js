@@ -1,4 +1,4 @@
-const { create, migrate } = require('./middlewares');
+const { create, migrate, remove } = require('./middlewares');
 
 module.exports = {
   createGroup: async (root, { group: { isIncome, name } }, context) => {
@@ -34,17 +34,22 @@ module.exports = {
     }
   },
 
-  deleteGroup: async (root, { id }, { models }) => {
-    const targetGroup = await models.Group.findOne({ where: { id } });
-    if (!targetGroup) return null;
-    const hasCategories = await targetGroup.countCategories({
-      where: { tombstone: 0 }
-    });
-    if (hasCategories) {
-      return new Error("This group has categories. It can't be deleted.");
-    }
-    return targetGroup.update({
-      tombstone: 1
-    });
+  deleteGroup: async (root, { id }, context) => {
+    const validator = async category => {
+      try {
+        const hasCategories = await category.countCategories({
+          where: { tombstone: 0 }
+        });
+        if (hasCategories) {
+          return new Error("This group has categories. It can't be deleted.");
+        }
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
+    };
+
+    return remove('Group', id, context, validator);
   }
 };
