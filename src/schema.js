@@ -270,7 +270,7 @@ const typeDefs = gql`
     createUser(user: CreateUserInput!): User
 
     createAccount(account: CreateAccountInput!): Account
-    migrateAccount(account: MigrateTransactionInput): Account
+    migrateAccount(account: MigrateAccountInput): Account
     deleteAccount(id: ID!): Account
 
     createCategory(category: CreateCategoryInput!): Category
@@ -285,7 +285,7 @@ const typeDefs = gql`
     createInvoice(invoice: CreateInvoiceInput): Invoice
 
     createPayee(payee: CreatePayeeInput!): Payee
-    migratePayee(Payee: MigratePayeeInput!): Payee
+    migratePayee(payee: MigratePayeeInput!): Payee
     deletePayee(id: ID!): Payee
 
     createProduct(product: CreateProductInput): Product

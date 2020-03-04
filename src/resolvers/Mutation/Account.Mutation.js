@@ -38,11 +38,6 @@ module.exports = {
         { id, name, tombstone },
         context
       );
-      await create(
-        'Payee',
-        { name: `${name} (Account)`, transferAccount: createdAccount.id },
-        context
-      );
       return createdAccount;
     } catch (err) {
       console.log(err);
