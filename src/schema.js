@@ -61,6 +61,7 @@ const Category = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    group: Group!
   }
 
   input CreateCategoryInput {
@@ -142,6 +143,10 @@ const Transaction = gql`
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
+    account: Account!
+    category: Category!
+    payee: Payee!
+    invoice: Invoice
   }
 
   input CreateTransactionInput {

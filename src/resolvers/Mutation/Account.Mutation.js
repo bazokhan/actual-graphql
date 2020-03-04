@@ -13,7 +13,7 @@ module.exports = {
       const createdAccount = await create('Account', { name }, context);
       await create(
         'Payee',
-        { name, transferAccount: createdAccount.id },
+        { name: `${name} (Account)`, transferAccount: createdAccount.id },
         context
       );
       return createdAccount;
@@ -40,7 +40,7 @@ module.exports = {
       );
       await create(
         'Payee',
-        { name, transferAccount: createdAccount.id },
+        { name: `${name} (Account)`, transferAccount: createdAccount.id },
         context
       );
       return createdAccount;
