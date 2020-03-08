@@ -25,7 +25,6 @@ module.exports = {
       try {
         const ts = await next.getTransactions({ where: { tombstone: 0 } });
         if (ts && ts.length) {
-          console.log('Got !');
           prev = [prev, ts].flat();
         }
       } catch (err) {
