@@ -4,7 +4,7 @@ module.exports = {
   createProduct: async (root, { product: { name, invoicesIds } }, context) => {
     try {
       const { author } = context;
-      const service = await author.getService();
+      const service = await author.getOwner();
       const products = await service.getProducts({ where: { tombstone: 0 } });
       if (products && products.map(product => product.name).includes(name)) {
         return new Error('Already has a product with this name');

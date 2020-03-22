@@ -4,7 +4,7 @@ module.exports = {
   createCategory: async (root, { category: { groupId, name } }, context) => {
     try {
       const { author } = context;
-      const service = await author.getService();
+      const service = await author.getOwner();
       const categories = await service.getCategories({
         where: { groupId, tombstone: 0 }
       });
@@ -40,7 +40,7 @@ module.exports = {
       const { author, models } = context;
       const alreadyExists = await models.Category.findByPk(id);
       if (alreadyExists) return new Error('Already existing!');
-      const service = await author.getService();
+      const service = await author.getOwner();
       const groups = await service.getGroups({
         where: { id: groupId, tombstone: 0 }
       });

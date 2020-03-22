@@ -4,7 +4,7 @@ module.exports = {
   createGroup: async (root, { group: { isIncome, name } }, context) => {
     try {
       const { author } = context;
-      const service = await author.getService();
+      const service = await author.getOwner();
       const groups = await service.getGroups({ where: { tombstone: 0 } });
       if (groups && groups.map(group => group.name).includes(name)) {
         return new Error('Already has a group with this name');

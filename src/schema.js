@@ -17,6 +17,7 @@ const User = gql`
     createdAt: String!
     updatedAt: String!
     service: Service!
+    services: [Service]
   }
 
   input CreateUserInput {
@@ -139,7 +140,7 @@ const Transaction = gql`
     id: ID!
     amount: Float!
     notes: String
-    date: String!
+    date: Int!
     deleted: Boolean!
     createdAt: String!
     updatedAt: String!
@@ -152,7 +153,7 @@ const Transaction = gql`
   input CreateTransactionInput {
     amount: Float!
     notes: String
-    date: String!
+    date: Int!
     accountId: ID
     categoryId: ID
     payeeId: ID
@@ -161,7 +162,7 @@ const Transaction = gql`
   input UpdateTransactionInput {
     amount: Float
     notes: String
-    date: String
+    date: Int
     accountId: ID
     categoryId: ID
     payeeId: ID
@@ -172,7 +173,7 @@ const Transaction = gql`
     id: ID
     amount: Float!
     notes: String
-    date: String!
+    date: Int!
     accountId: ID
     categoryId: ID
     payeeId: ID
@@ -231,6 +232,7 @@ const Service = gql`
     products: [Product]
     createdAt: String!
     updatedAt: String!
+    contributors: [User]
   }
 `;
 
@@ -256,6 +258,7 @@ const typeDefs = gql`
   type Query {
     services: [Service!]!
     users(includeDeleted: Boolean, onlyDeleted: Boolean): [User!]!
+
     accounts(includeDeleted: Boolean, onlyDeleted: Boolean): [Account!]!
     categories(includeDeleted: Boolean, onlyDeleted: Boolean): [Category!]!
     groups(includeDeleted: Boolean, onlyDeleted: Boolean): [Group!]!
@@ -263,6 +266,44 @@ const typeDefs = gql`
     payees(includeDeleted: Boolean, onlyDeleted: Boolean): [Payee!]!
     products(includeDeleted: Boolean, onlyDeleted: Boolean): [Product!]!
     transactions(includeDeleted: Boolean, onlyDeleted: Boolean): [Transaction!]!
+
+    publicUserProfiles: [User]
+    contributorServices: [Service]
+    contributorAccounts(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Account!]!
+    contributorCategories(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Category!]!
+    contributorGroups(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Group!]!
+    contributorInvoices(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Invoice!]!
+    contributorPayees(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Payee!]!
+    contributorProducts(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Product!]!
+    contributorTransactions(
+      includeDeleted: Boolean
+      onlyDeleted: Boolean
+      serviceId: ID!
+    ): [Transaction!]!
   }
 
   type Mutation {
@@ -294,6 +335,9 @@ const typeDefs = gql`
     migrateTransaction(transaction: MigrateTransactionInput!): Transaction
     updateTransaction(id: ID!, transaction: UpdateTransactionInput): Transaction
     deleteTransaction(id: ID!): Transaction
+
+    addContributor(userId: ID!): Service
+    deleteContributor(userId: ID!): Service
   }
 `;
 

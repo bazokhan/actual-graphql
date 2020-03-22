@@ -9,7 +9,7 @@ module.exports = {
         if (!linkedAccount)
           return new Error('No Account Found To Be Linked To This Payee');
       }
-      const service = await author.getService();
+      const service = await author.getOwner();
       const payees = await service.getPayees({ where: { tombstone: 0 } });
       if (payees && payees.map(payee => payee.name).includes(name)) {
         return new Error('Already has a payee with this name');

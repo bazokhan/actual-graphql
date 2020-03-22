@@ -8,5 +8,6 @@ module.exports = {
   transactions: async service =>
     service.getTransactions({ where: { tombstone: 0 } }),
   invoices: async service => service.getInvoices({ where: { tombstone: 0 } }),
-  products: async service => service.getProducts({ where: { tombstone: 0 } })
+  products: async service => service.getProducts({ where: { tombstone: 0 } }),
+  contributors: async service => service.getUsers({ where: { tombstone: 0 } })
 };

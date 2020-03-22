@@ -4,7 +4,7 @@ module.exports = {
   createAccount: async (root, { account: { name } }, context) => {
     try {
       const { author } = context;
-      const service = await author.getService();
+      const service = await author.getOwner();
       const accounts = await service.getAccounts({ where: { tombstone: 0 } });
       if (accounts && accounts.map(account => account.name).includes(name)) {
         return new Error('Already has an account with this name');
