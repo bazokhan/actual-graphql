@@ -1,6 +1,15 @@
 const { authenticate, moderate, contribute } = require('./middlewares');
 
 module.exports = {
+  myService: async (root, args, context) => {
+    const { author } = context;
+    return authenticate(context, async () => author.getOwner());
+  },
+  myProfile: async (root, args, context) => {
+    const { author } = context;
+    return author;
+  },
+
   // Global queries
   services: async (root, args, context) => {
     const { models } = context;

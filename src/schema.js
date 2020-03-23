@@ -256,6 +256,9 @@ const typeDefs = gql`
   }
 
   type Query {
+    myService: Service!
+    myProfile: User!
+
     services: [Service!]!
     users(includeDeleted: Boolean, onlyDeleted: Boolean): [User!]!
 
