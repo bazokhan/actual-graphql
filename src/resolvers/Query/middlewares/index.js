@@ -34,10 +34,12 @@ const contribute = async (serviceId, context, queryFunction) => {
     const contributors = await service.getUsers({
       where: { tombstone: 0 }
     });
-    if (!contributors.includes(author.id))
+    const contributorIds = contributors.map(c => c.id);
+    if (!contributorIds.includes(author.id)) {
       return new Error(
         'You are not authorized to view this service, please contact the service owner.'
       );
+    }
     if (!queryFunction) return new Error('Query function must be provided!');
     return queryFunction(service);
   } catch (err) {
